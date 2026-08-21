@@ -1,0 +1,60 @@
+# Citation metadata. GitHub renders a "Cite this repository" box from this file,
+# and Zenodo reads it when minting the DOI.
+#
+# BEFORE RELEASE, set three things (VERSIONING.md explains how releases are cited):
+#   1. date-released  -> the actual date you tag the release
+#   2. repository-code / url -> your real GitHub URL
+#   3. orcid -> your ORCID iD if you register one (recommended; free, ~5 minutes,
+#      at https://orcid.org/register). It is a permanent author identifier that
+#      ties this kit, the article, and anything later to one verifiable identity.
+#      If you do not register one, delete the orcid line entirely.
+
+cff-version: 1.2.0
+title: Hard-Gate Starter Kit
+message: >-
+  If you use this kit, please cite it using the metadata in this file.
+type: dataset  # CFF 1.2.0 offers only "software" or "dataset"; this kit is
+               # documentation, and is deposited to Zenodo as a technical note.
+authors:
+  - family-names: Mushangwe
+    given-names: Tererai
+    orcid: "{{ORCID}}"
+abstract: >-
+  A free, MIT-licensed low-code pattern for building enforceable quality records
+  in small and mid-sized manufacturing. A hard gate is a rule the software
+  enforces rather than a policy people are asked to remember: a record cannot
+  advance to the next stage until the evidence that stage requires actually
+  exists. The kit documents a three-table data model, the gate-enforcement
+  pattern and the three mistakes that make a gate decorative, a step-by-step
+  implementation guide, an explicit mapping to ISO 9001:2015 clauses and
+  CMMC / NIST SP 800-171 practices (including what it does not cover).
+  Four complete worked examples are included, with fabricated sample data
+  throughout — incoming inspection,
+  non-conformance intake, in-process production checks, and a read-only
+  compliance-status dashboard — together with a complete build guide for
+  Microsoft Lists including each gate written as a server-evaluated list
+  validation formula, a rollout runbook, a validation and test plan, a
+  thirty-minute gate self-test usable against systems not built from this kit,
+  and workshop and talk material for teaching it.
+  Written for quality managers, engineers and owners at small manufacturers in
+  regulated supply chains who have been told they need better records and have
+  no budget for a quality-management platform.
+keywords:
+  - quality management
+  - ISO 9001
+  - CMMC
+  - NIST SP 800-171
+  - low-code
+  - citizen development
+  - manufacturing
+  - small and medium-sized manufacturers
+  - compliance
+  - traceability
+  - supply chain
+  - process control
+  - audit evidence
+license: MIT
+version: 1.0.0
+date-released: "{{RELEASE_DATE}}"
+repository-code: "https://github.com/terimush/hard-gate-starter-kit"
+url: "https://github.com/terimush/hard-gate-starter-kit"

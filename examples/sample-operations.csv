@@ -1,0 +1,6 @@
+Operation_Reference,Work_Order,Item,Operation_Number,Check_Frequency,Quantity_Planned,Quantity_Made,Required_Checks,Operator,SignedOff_By,Released_On,Verified_On,SignedOff_On,Stage,Nonconformance,InProcess_Check_Count,Check_Frequency_At_Release
+WO-7712-10,WO-7712,SHAFT-D7,10,25,100,100,3,Person B,Person D,2026-07-13T07:12:00Z,2026-07-13T14:20:00Z,2026-07-13T14:35:00Z,SignedOff,,3,25
+WO-7712-20,WO-7712,SHAFT-D7,20,25,100,100,3,Person A,Person C,2026-07-14T07:20:00Z,2026-07-14T14:25:00Z,2026-08-14T17:10:00Z,SignedOff,NC-0402,3,25
+WO-7712-30,WO-7712,SHAFT-D7,30,25,100,100,3,Person B,Person C,2026-07-15T07:18:00Z,2026-07-15T14:15:00Z,2026-07-15T14:40:00Z,SignedOff,,3,25
+WO-7713-10,WO-7713,GASKET-M5,10,50,300,,,Person A,,2026-07-16T07:15:00Z,,,Running,,1,50
+WO-7713-20,WO-7713,GASKET-M5,20,50,300,,,,,,,,Ready,,0,

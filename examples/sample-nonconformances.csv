@@ -1,0 +1,4 @@
+NC_Reference,Inspection,Description,Severity,Cause_Level_1,Cause_Level_2,Cause_Level_3,Raised_By,Raised_On,Containment,Raised_By_Email
+NC-0311,RC-2040,Burrs present on shaft end face,Minor,Deburr step skipped,Operator unaware step applied to this variant,Work instruction not updated when variant introduced,Person A,2026-07-07T09:10:00Z,Batch held and deburred before release,person.a@example.com
+NC-0312,RC-2041,Four units outside diameter tolerance,Major,Dimension out of tolerance,Tool wear not detected between batches,No in-process check defined at that operation,Person A,2026-07-08T10:55:00Z,Remaining 450 quarantined pending supplier response,person.a@example.com
+NC-0313,RC-2043,Surface finish blemish on visible face,Minor,Handling damage in transit,Packaging spec allows part-to-part contact,Packaging requirement never flowed down on the PO,Person B,2026-07-10T12:04:00Z,Segregated pending customer concession,person.b@example.com

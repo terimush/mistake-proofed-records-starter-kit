@@ -1,0 +1,18 @@
+Check_Reference,Operation,Check_Type,Characteristic,Value,Result,Checked_By,Checked_On,Part_Count_At_Check,Nonconformance,Operation_Released_On
+PC-1170,WO-7712-10,First-off,Length mm,84.03,Pass,Person B,2026-07-13T07:05:00Z,0,,
+PC-1171,WO-7712-10,In-process,Length mm,84.02,Pass,Person B,2026-07-13T08:40:00Z,25,,2026-07-13T07:12:00Z
+PC-1172,WO-7712-10,In-process,Length mm,84.04,Pass,Person B,2026-07-13T10:15:00Z,50,,2026-07-13T07:12:00Z
+PC-1173,WO-7712-10,In-process,Length mm,84.01,Pass,Person B,2026-07-13T12:30:00Z,75,,2026-07-13T07:12:00Z
+PC-1174,WO-7712-10,Last-off,Length mm,84.02,Pass,Person B,2026-07-13T14:05:00Z,100,,2026-07-13T07:12:00Z
+PC-1180,WO-7712-20,First-off,Diameter mm,12.02,Pass,Person A,2026-07-14T07:10:00Z,0,,
+PC-1181,WO-7712-20,In-process,Diameter mm,12.01,Pass,Person A,2026-07-14T08:55:00Z,25,,2026-07-14T07:20:00Z
+PC-1182,WO-7712-20,In-process,Diameter mm,12.06,Fail,Person A,2026-07-14T10:30:00Z,50,NC-0402,2026-07-14T07:20:00Z
+PC-1183,WO-7712-20,In-process,Diameter mm,12.03,Pass,Person A,2026-07-14T12:40:00Z,75,,2026-07-14T07:20:00Z
+PC-1184,WO-7712-20,Last-off,Diameter mm,12.02,Pass,Person A,2026-07-14T14:10:00Z,100,,2026-07-14T07:20:00Z
+PC-1185,WO-7712-30,First-off,Surface finish Ra,1.2,Pass,Person B,2026-07-15T07:08:00Z,0,,
+PC-1186,WO-7712-30,In-process,Surface finish Ra,1.3,Pass,Person B,2026-07-15T09:00:00Z,25,,2026-07-15T07:18:00Z
+PC-1187,WO-7712-30,In-process,Surface finish Ra,1.2,Pass,Person B,2026-07-15T10:40:00Z,50,,2026-07-15T07:18:00Z
+PC-1188,WO-7712-30,In-process,Surface finish Ra,1.4,Pass,Person B,2026-07-15T12:35:00Z,75,,2026-07-15T07:18:00Z
+PC-1189,WO-7712-30,Last-off,Surface finish Ra,1.3,Pass,Person B,2026-07-15T14:00:00Z,100,,2026-07-15T07:18:00Z
+PC-1190,WO-7713-10,First-off,Thickness mm,3.01,Pass,Person A,2026-07-16T07:06:00Z,0,,
+PC-1191,WO-7713-10,In-process,Thickness mm,3.02,Pass,Person A,2026-07-16T09:10:00Z,50,,2026-07-16T07:15:00Z

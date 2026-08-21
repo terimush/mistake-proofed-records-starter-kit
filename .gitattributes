@@ -1,0 +1,4 @@
+# Keep the archive byte-stable across platforms. Zenodo snapshots whatever the
+# release tag contains, so line endings must not depend on who cloned it.
+* text=auto eol=lf
+*.png binary

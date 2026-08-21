@@ -1,0 +1,32 @@
+{
+  "title": "Hard-Gate Starter Kit: enforceable quality records for small manufacturers using already-licensed low-code platforms",
+  "upload_type": "publication",
+  "access_right": "open",
+  "license": "MIT",
+  "version": "1.0.0",
+  "language": "eng",
+  "creators": [
+    {
+      "name": "Mushangwe, Tererai",
+      "orcid": "{{ORCID}}"
+    }
+  ],
+  "description": "<p>A free, MIT-licensed low-code pattern for building enforceable quality records in small and mid-sized manufacturing.</p><p>A small manufacturer supplying a regulated customer carries substantially the same documentation and traceability obligations as a large one, but dedicated quality-management platforms are priced for large firms. The common result is a quality system run on paper, spreadsheets and memory, with the evidence rebuilt retrospectively when an audit is scheduled. Retrospective records are the failure mode.</p><p>A <em>hard gate</em> is a rule the software enforces rather than a policy people are asked to remember: a record cannot advance to the next stage until the evidence that stage requires actually exists. No inspection result, no advance. No root-cause entry, no closure. The record is the process, so following the process and producing the evidence become the same action.</p><p>The pattern is deliberately small &mdash; three tables, one status column, and a set of conditions on the transitions between statuses. It runs on general-purpose low-code business platforms; the worked example targets the Microsoft Power Platform, but the pattern is not vendor-specific and the documentation is written so it can be rebuilt anywhere with a forms layer and a rules engine. The implementation guide is explicit about what each platform tier enforces: on a standard Microsoft 365 subscription, SharePoint list validation formulas are evaluated by the server when the item is saved, so a correctly written gate condition holds whichever client wrote the record, including a direct write to the list. What that tier cannot do is lock one column against one user, so a field its earlier stage required can still be altered until the record is locked at closure; Dataverse and a premium licence are what buy per-column, per-record, stage-conditional locking.</p><p><strong>Contents:</strong> a three-table data model; the gate-enforcement pattern, including the three mistakes that make a gate decorative; a step-by-step implementation guide with licensing notes and an honest time estimate; a mapping to ISO 9001:2015 clauses and CMMC / NIST SP 800-171 practices that is explicit about what it does <em>not</em> cover; and four complete worked examples with fabricated sample data throughout &mdash; incoming inspection, non-conformance intake with enforced causal depth and two separate approver separations, in-process production checks with coverage arithmetic against a locked check frequency, and a read-only compliance-status dashboard whose first two panels exist to show the reader how their own records might be worthless. A dedicated build guide covers Microsoft Lists, where list validation formulas are evaluated server-side on save and so enforce gate conditions whichever client wrote the record &mdash; including which condition belongs on which list, the shadow-column technique that person, lookup and multiple-lines-of-text columns require, the per-item closure lock, and the documented permission-scope ceiling. The release also includes a rollout runbook, a validation and test plan stating, per platform route, which attempts are expected to be refused and which are expected to be permitted, a thirty-minute gate self-test usable against systems not built from this kit, troubleshooting and FAQ material, and workshop, talk and handout material for teaching it.</p><p><strong>This is not a quality management system and it is not certification.</strong> It will not make an organisation ISO 9001 certified or CMMC compliant. It is a pattern for building records that hold up, which is one part of a much larger picture. There is no warranty; users are responsible for validating anything they build for their own use.</p><p>Released in a personal capacity as a contribution to the small-manufacturer community. Nothing here is derived from, endorsed by, or associated with any employer, and no proprietary material of any organisation is included.</p>",
+  "keywords": [
+    "quality management",
+    "ISO 9001",
+    "CMMC",
+    "NIST SP 800-171",
+    "low-code",
+    "citizen development",
+    "manufacturing",
+    "small and medium-sized manufacturers",
+    "compliance",
+    "traceability",
+    "supply chain",
+    "process control",
+    "audit evidence"
+  ],
+  "notes": "Documentation and worked examples only; no executable code. Sample data is fabricated throughout. Before publishing, replace the placeholder ORCID with a real iD or remove the orcid field entirely.",
+  "publication_type": "technicalnote"
+}
