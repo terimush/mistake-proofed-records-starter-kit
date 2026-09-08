@@ -86,6 +86,13 @@ From `docs/02-hard-gate-pattern.md` §5. Both run against records you already ho
 
 **The distribution check.** When were your records actually created?
 
+**Without writing a query.** Export the records to a spreadsheet and keep the created and modified columns.
+Insert a pivot table, put the created date in rows and a count of references in values, and group the rows by
+day. That histogram is the whole check. If you have no created-date column to export, you do not need the
+check — see `START-HERE.md`, "30 minutes".
+
+**If you or your IT provider would rather query the source directly:**
+
 ```
 SELECT   date(Created_On) AS day, count(*)
 FROM     <your records table>
@@ -98,6 +105,11 @@ record in a quarter created in the week before an audit. That means the work hap
 system is a filing cabinet. Real in-process use spreads across the working calendar.
 
 **The dwell check.** How long was each record open?
+
+**Without writing a query.** In the same export, add a column of `Modified − Created` and sort it ascending.
+Read the top of the list. Anything finished within seconds of being created was typed up afterwards.
+
+**Or, at the source:**
 
 ```
 SELECT   Reference, Created_On, Modified_On,

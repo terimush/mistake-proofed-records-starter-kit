@@ -1,8 +1,14 @@
 # Implementation guide
 
-Honest estimate: **an evening** for a working, genuinely gated build on Microsoft Lists if you have used a
-low-code forms tool before, a weekend if you have not. Budget a further afternoon to adapt the stages to how
-your shop actually works, which matters more than the build.
+Honest estimate: **two working days**, not the evening earlier editions promised. The kit has now been built
+by hand from its own instructions, with a stopwatch: the first working gate set — three lists, three
+formulas, four flows — took 8.78 hours against a 4.36-hour plan (stopwatch-timed, self-reported, one build).
+The per-part figures are in `docs/09-microsoft-lists-build.md` §4, *"What Gate 1 actually cost to build"*;
+plan from that table rather than from this sentence. One item from it belongs here because it changes how
+you plan: **the three validation formulas are not data entry.** They were budgeted at 31 minutes as pasting
+and took 211, about 40 % of the build, because a formula that saves is not thereby correct and has to be
+proved clause by clause from the grid. Book them as design work. Budget a further afternoon to adapt the
+stages to how your shop actually works, which matters more than the build.
 
 **Start on Lists.** It is included in most Microsoft 365 business subscriptions and it enforces more than its
 reputation suggests — `docs/09-microsoft-lists-build.md` is the complete build. Read "Choosing your platform"
@@ -113,7 +119,12 @@ performs an update "can potentially trigger itself forever." Power Automate will
 Fix it deliberately rather than ignoring the warning: put a **trigger condition** on the flow so it only
 fires on the transitions you care about, or add a **Terminate** action once the flow detects it is
 reprocessing its own write. Do this before the flow ever touches real data — a loop against a live list is
-unpleasant to unwind, and can exhaust your request limits and get the flow suspended.
+unpleasant to unwind, and can exhaust your request limits and get the flow suspended. Never write a trigger
+condition against a column key you have not read back from a real run's trigger output — a condition that
+names a key the connector does not use resolves to nothing, and a guard built on nothing is true on every
+save, including the flow's own (`docs/09-microsoft-lists-build.md` §7 records the two days that cost). And
+the loop check — one edit, exactly one run, then silence for five minutes — must pass before any F-flow is
+left switched on.
 
 **Do this in a sandbox first.** Build it, run fake records through it, try to break your own gates. Only then
 point it at real work.
@@ -133,13 +144,26 @@ platform choice above.**
   the *result* of the write illegal, which gets you most of the way. Write the gate as a list validation
   formula stating what must be true of a record **at** each stage, rather than what must happen during a
   transition. A user who types `Closed` into `Stage` in grid view is then submitting an item that fails
-  validation, and the server refuses it. `docs/09-microsoft-lists-build.md` §3 shows the formula shape. Keep
-  `Stage` off the form as well, for the honest user's benefit.
+  validation, and the server refuses it. `docs/09-microsoft-lists-build.md` §3 shows the formula shape.
 
-**3 · Build the transition rules.** One rule per gate. Each evaluates the gate condition and either advances
-`Stage` and stamps the timestamp, or refuses and returns a message naming what is missing. Refusing with a
-useful message matters — "Cannot advance: inspection result and quantity checked are required" saves a
-support call that "Validation failed" generates.
+  ⚠ **Leave `Stage` on the form on Route A.** It is tempting to hide it as well, and it is wrong here:
+  nothing in the Lists build advances a record, so hiding the column leaves an honest inspector with no way
+  to move one except the grid — the path you are about to use as the *attack* in step 7. On this route the
+  user names the stage they are claiming and the server refuses the claim if the evidence is not there. The
+  honesty comes from the refusal, not from concealment.
+
+**3 · Build the rules.** What this step produces differs by route, and the difference is not cosmetic.
+
+- *Route B (Dataverse):* one rule per gate. Each evaluates the gate condition and either advances `Stage`
+  and stamps the timestamp, or refuses and returns a message naming what is missing. Refusing with a useful
+  message matters — "Cannot advance: inspection result and quantity checked are required" saves a support
+  call that "Validation failed" generates.
+- *Route A (Lists):* **nothing advances the record.** The user sets `Stage`, and the list's single validation
+  formula refuses any item that is not legal at the stage it claims. The flows on this route are not
+  transition rules; they maintain the machinery columns the formula reads, and stamp the timestamps
+  afterwards. One formula and one message per list — so the per-field message above is a Route B luxury, and
+  on Route A it lives in the canvas app or nowhere. `docs/09-microsoft-lists-build.md` §3 and §4 are the
+  build, and there are nine flows in it rather than five, because a SharePoint trigger binds to one list.
 
 **Set the trigger condition now, not later** — see the infinite-loop warning above. A rule that writes to the
 record that triggered it will retrigger itself unless you constrain it.
@@ -221,7 +245,8 @@ need is a new system-stamped transition.
 
 ## Running it for real
 
-Start with one process and one team. Incoming inspection is the usual best first choice: bounded, frequent
+Start with one process and one team. Incoming inspection is the best first choice — the same answer
+`START-HERE.md` and `README.md` give, for the same reason: bounded, frequent
 enough to build habit, and low-stakes if you get the stages wrong on the first pass.
 
 Tell people plainly why the gates exist. A gate presented as bureaucracy gets resented; the same gate

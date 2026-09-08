@@ -10,6 +10,33 @@ platform" in `docs/03-implementation-guide.md` first — several answers turn on
 
 ## 1 · Troubleshooting
 
+### I can't find Validation settings
+
+**Symptom.** You open List settings on a list you have just built, ready to paste formula 1 from
+`docs/09-microsoft-lists-build.md` §3, and there is no *Validation settings* link. Column validation may be
+there; the list-level one is not.
+
+**Cause.** The list was created under **"My lists"** in the Microsoft Lists app. Those are personal lists,
+and Validation settings do not exist on them. They exist only on a list that lives on a SharePoint site. The
+Lists app makes no distinction on screen, which is why this is the first wall people hit — the first build
+of this kit from its own instructions made it a pre-flight check for that reason, and it is now the boxed
+warning at the top of `docs/09-microsoft-lists-build.md`.
+
+**Fix.** Move to a site list. Open (or have someone create) a SharePoint **team site**, make sure you are an
+owner of it, and create the three lists **from the site**, not from the Lists app's home page. Then build
+the columns again, with the settings in `docs/09-microsoft-lists-build.md` §4 step 3, and paste the formulas.
+There is no setting that converts a personal list into a site list, and the flows in §4 will need to be
+pointed at the new lists in any case.
+
+**Data you have already entered.** Two honest options. If it is test data, discard it; you were about to
+run `docs/06-validation-and-test-plan.md` against a fresh list anyway. If it is real data, export the
+personal list to Excel, create the site lists, and import — but read the note in `docs/09` *"Why this
+document exists"* first: bulk-import paths are documented to behave differently from ordinary writes, so
+records that would fail validation may land anyway. Import them all at `Draft`, which every formula excuses,
+and let the users advance each one through the gate; and treat the personal-list period as unvalidated in
+your records, because it was. Do not leave the personal list in service alongside the site list while you
+decide — two copies of the same records is how the wrong one gets updated.
+
 ### The flow triggers itself in a loop
 
 **Symptom.** One record edit produces dozens or hundreds of flow runs, seconds apart. Everything slows down
@@ -25,14 +52,68 @@ condition** on it so it fires only on the transitions you care about — typical
 the modifying identity is not the service account your rules run under. Add a **Terminate** action that stops
 the run when the flow detects it is reprocessing its own write. Do it in a sandbox first.
 
+### My flow runs every thirty seconds and every run succeeds
+
+**Symptom.** The run history shows a run every half-minute or so against a record nobody is touching, and
+every one of them is green. Nothing errors, the record looks right, and the version number on it is in the
+hundreds or thousands. Sooner or later the tenant's trigger quota switches the flow off.
+
+**Cause.** The trigger condition names a column by a key the connector is not using. A column created
+through the UI with an underscore in its name has the encoded internal name `Inspector_x005f_Email`; which
+form the SharePoint connector's trigger body carries depends on how the column was created and on the
+connector, not on what the list settings page shows, and in the kit's tenant it was the plain
+`Inspector_Email`. A condition written against the wrong one does not fail — the reference resolves to
+null, `coalesce()` turns null into an empty string, and a guard such as "run only when the person column and
+its shadow disagree" is then true on every save, including the flow's own write. The kit's own first build
+had exactly this: F1a ran itself for two days and pushed one test record to version 2,938 before anyone
+looked. Every run succeeded, which is why it hid.
+
+**Fix.** Switch the flow off and let the queue drain. Open the trigger output of any one run and read the
+column keys exactly as the body shows them — that is the only place the truth is, not the list settings
+page. Rewrite the condition with those keys; the corrected expressions for the four Gate 1 flows are in
+`docs/09-microsoft-lists-build.md` §4, *Trigger conditions and the F2 write*. Then run
+`docs/06-validation-and-test-plan.md` T17 — one edit, exactly one run, then five minutes of silence — before
+you switch the flow back on. Never write a trigger condition against a key you have not read back from a
+real run.
+
+### The reverse lookup on the inspection never fills
+
+**Symptom.** F2a runs and succeeds, `NC_Reference_Text` is written correctly onto the inspection, but the
+inspection's `Nonconformance` lookup stays blank — or keeps whatever it already held — however many times
+the flow runs.
+
+**Cause.** The `Nonconformance Id` chip on the *Update item* card is wired to the parent's own existing
+value, `outputs('Get_parent_inspection')?['body/Nonconformance/Id']`, so the flow writes back what was
+already there. That is the wrong source: the value the reverse lookup needs is the non-conformance that
+triggered the flow. The kit's own first build was wired this way, and it was found on review rather than in
+testing — the flow had not yet been run.
+
+**Fix.** Set `Nonconformance Id` on the Inspection write to `triggerBody()?['ID']` — the non-conformance's
+own ID from the trigger, never anything from *Get parent inspection*. Keep the required fields (`Reference`,
+`Quantity_Received`) copied back from the parent so the update is a legal item, and check the condition's
+second row compares the parent's `Nonconformance/Id` against `triggerBody()?['ID']` as well, or the flow
+will never decide the lookup is stale. The full wiring is in `docs/09-microsoft-lists-build.md` §4.
+
 ### Someone set `Stage` directly and the gate never ran
 
 **Symptom.** A record sits in `Closed` with no result, no inspector and no timestamp. Nothing refused it.
 
-**Cause.** On **Route A** this is the platform, not a bug. SharePoint's smallest unit of permission is the
-item, not the column, so there is no supported way to make `Stage` read-only to someone who can still edit
-records. Anyone in grid view, an import or another client can write it. Keeping the column off every form
-stops the honest user and nobody else.
+**Cause — and read this before you conclude it is the platform.** If you built the formula in
+`docs/09-microsoft-lists-build.md` §3, **most of that record cannot exist** — the missing result and the
+missing inspector are both refused by clause 1. The missing *timestamp* is a different matter and is not
+refused by anything: `Inspected_On` is stamped by flow F4 after the save, and §4 of that document explains why
+no formula can require it. So a blank timestamp on its own means F4 is not running; a blank result or
+inspector means the formula is not doing its job. Clause 1 requires the quantity checked,
+the result and the inspector at every stage past `Draft`, whichever client submitted the item. So this
+symptom means one of three things, in order of likelihood: the validation formula is not on the list at all,
+or it was overwritten (a list holds **one** formula, and adding a second replaces the first), or the columns
+it names do not match the list's display names exactly, in which case it never evaluated the way you think.
+Check those three before anything else.
+
+What *is* the platform: SharePoint's smallest unit of permission is the item, not the column, so there is no
+supported way to make `Stage` read-only to someone who can still edit records. Anyone in grid view, an import
+or another client can write it. That is why the gate is written as a rule about which *states* are legal
+rather than as a lock on the column — the write succeeds and the resulting item is refused.
 
 **Fix.** On **Route B**, enable column security on `Stage` and grant Update through a Column Security Profile
 only to the service identity your rules run under. That closes it properly.
@@ -126,9 +207,25 @@ after it was switched on can be restored, the retention window is capped at **30
 types are excluded from it entirely. Confirm which of those is true for your environment now rather than at
 the moment you need it. Where recovery is possible, act
 immediately. Then remove delete permission from everyone who does not need it, and give people a supported
-way to void a record — a `Cancelled` value on `Stage`, set through a rule, with a required reason. People
-delete records because there is no legitimate way to say one was raised in error, and a system with no such
-path gets corrected by deletion.
+way to void a record — a `Cancelled` value on `Stage`, with a required reason. People delete records because
+there is no legitimate way to say one was raised in error, and a system with no such path gets corrected by
+deletion.
+
+⚠ **Adding that value takes three changes, not one, and the formula is the one people miss.** A receipt raised
+in error has no quantity checked, no result and no inspector — which is exactly the record clause 1 refuses at
+any stage other than `Draft`. So `Cancelled` has to be excused the same way `Draft` is, in **both** of the
+first two clauses:
+
+```
+IF( OR([Stage]="Draft", [Stage]="Cancelled"), TRUE, ... )
+IF( OR([Stage]="Draft", [Stage]="Inspected", [Stage]="Cancelled"), TRUE, ... )
+```
+
+Add the value to the choice column (fill-in choices are off, per `docs/09-microsoft-lists-build.md` §4 step 3,
+so it will not appear by itself), require the reason in the app rather than in the formula — one list, one
+message — and remember that on Route A the user sets the stage, so "set through a rule" is Route B language.
+Without the formula change the only way to cancel an erroneous record is to fabricate a complete inspection
+first, which is worse than the deletion you were trying to prevent.
 
 Note the boundary honestly. No records system is beyond alteration by a sufficiently privileged
 administrator; someone with tenant-level rights can remove a record and its history on either route. What you

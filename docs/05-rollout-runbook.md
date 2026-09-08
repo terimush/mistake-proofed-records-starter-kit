@@ -32,7 +32,7 @@ to everyone at once removes your ability to learn anything from a complaint.
 
 | Phase | Elapsed time | What done looks like | What makes you stop and go back |
 |---|---|---|---|
-| **Sandbox build** | An evening if you have used a low-code forms tool, a weekend if not, plus an afternoon adapting stages | Three tables, three gates, seven build steps, against a test environment | Causal-depth or self-approval gates can be bypassed — a build fault, not the platform. Back to `docs/02-hard-gate-pattern.md` §2 |
+| **Sandbox build** | About two working days for the first working gate set (8.78 h measured, stopwatch-timed, one build), plus an afternoon adapting stages | Three tables, three gates, and the build order in `docs/03-implementation-guide.md` — ten steps on Lists, against a test environment | Causal-depth or self-approval gates can be bypassed — a build fault, not the platform. Back to `docs/02-hard-gate-pattern.md` §2 |
 | **Dry run on fabricated data** | Half a day | `examples/sample-data.csv` walked through every stage, every cheat in build step 7 attempted and logged | You cannot state in one sentence which cheats your build blocks |
 | **Parallel run** | Two to four weeks, hard limit | Both methods running, a written comparison, one real non-conformance carried to closure | Either side is being filled in retrospectively to keep up. See §3 |
 | **Cutover** | One day, announced a week ahead | The old method stops on a date everyone knows. Old records exported and retained, not deleted | Nobody can say who owns a gate refusal at 6am on a Saturday |

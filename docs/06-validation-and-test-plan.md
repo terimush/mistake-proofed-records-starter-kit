@@ -88,6 +88,11 @@ ON PASS  set Inspected_On = now()
 
 **Proves.** The positive path works, and nothing built to refuse bad data also refuses good data.
 
+⚠ **Run this one after the flows exist, not first.** On Route A, `Closure_Ready` is written only by flow F3,
+and formula 1's closure clause requires it for any record whose result is not `Accept`. So this test cannot
+complete until step 7 of `docs/09-microsoft-lists-build.md` §4 is done. It is numbered first because it is
+the test you care about most, not because it is the one to run first.
+
 **Steps.** In empty sandbox tables, create `RC-2041`, 500 units of `BRACKET-A1` from `Supplier Nine`. Quantity
 checked 50, `Result = Reject`, inspector set; advance. Raise `NC-0312` with description, severity and
 containment; advance. Three causal levels, `CA-0155` with owner and due date, approved by the *second*
@@ -111,7 +116,11 @@ condition tests as text, or the two-save sequence above. Fix it first; every lat
 
 **Steps.** Attempt to advance to `Inspected`.
 
-**Expected — both routes.** Refused every time, with a message naming the missing field.
+**Expected — Route B.** Refused every time, with a message naming the missing field.
+
+**Expected — Route A.** Refused every time, with **the list's single message**, which names all three gates
+rather than the field you missed. A list holds one formula and one message; §3 says so and the tests are
+written for both routes. Judge this test on the refusal, not on the wording.
 
 **If it advances anyway.** **T02, `Quantity_Checked`:** the condition tests the field's presence rather than
 its value, or the advance control is not wired to the rule. **T03, `Result`:** choice columns carry defaults,
@@ -123,7 +132,10 @@ name passes while giving you nothing that survives scrutiny (`docs/01-data-model
 **Steps.** With quantity received 500, enter quantity checked 600 and advance. Repeat with 0. Then repeat
 with the field left genuinely empty.
 
-**Expected — both routes.** 600 refused. Decide deliberately whether zero is legitimate in your process — and
+**Expected — both routes.** 600 refused. **Zero is *not* refused by the formula as written** — `NOT(ISBLANK(0))`
+is satisfied and `0 <= Quantity_Received` holds — so a record can reach `Inspected` with nothing inspected.
+Decide deliberately whether zero is legitimate in your process; if it is not, add `[Quantity_Checked] > 0` to
+clause 1 and set the column's minimum value to 1. Decide it now rather than discovering it, and
 find out, rather than assume, whether your platform can tell an empty number column from a typed zero. The
 last of the three attempts is the one that answers it: if an empty `Quantity_Checked` is *permitted*, your
 `is not blank` condition is not doing anything on number columns and you need a different test — a minimum
@@ -138,7 +150,14 @@ number column that the platform treats as zero.
 
 **Steps.** Advance to `Dispositioned`. Repeat with a non-conformance linked but `Containment` blank.
 
-**Expected — both routes.** Refused both times.
+**Expected — Route B.** Refused both times.
+
+**Expected — Route A.** Refused the first time. **The second time it succeeds, and that is the platform.**
+`Containment` is multiple lines of text, which validation cannot read at all, so no formula on the
+`Nonconformance` list can require it. If you want that gate on Route A you have to add it yourself — either
+make `Containment` a single line of text and add the condition to formula 2, or have a flow check it and
+maintain a yes/no the formula reads. `docs/09-microsoft-lists-build.md` §1 sets out both. Until you do,
+write down that this one is open.
 
 **If it differs.** A gate checking that a link exists, but not what is behind it, passes empty records.
 
@@ -147,9 +166,16 @@ number column that the platform treats as zero.
 **Proves.** Enforced causal depth. Must hold on both routes, because it lives in your rules rather than in
 permissions.
 
-**Preconditions.** Record at `Dispositioned`, non-conformance with `Cause_Level_1` and `_2` only. Advance.
+**Preconditions.** Record at `Dispositioned`, and a non-conformance you are trying to give
+`Cause_Level_1` and `_2` only.
 
-**Expected — both routes.** Refused: *"Root cause needs three levels — keep asking why."*
+**Steps.** Attempt to **save the non-conformance** with two causal levels. Then attempt to save it with three
+levels where the first and third are the same word.
+
+**Expected — both routes.** Refused both times. Note *where* the refusal happens on Route A: formula 2 is a
+coherence rule, so the partial analysis cannot be saved **at all** — you never get as far as advancing the
+inspection. That is stricter than this test originally assumed, and it is the intended behaviour. The
+same-word case is what the third comparison in formula 2 exists to catch.
 
 **If it differs.** Your gate is decorative. Return to `docs/02-hard-gate-pattern.md` §2 before anything else.
 
@@ -160,7 +186,14 @@ cleared.
 
 **Steps.** Advance. Restore the owner, clear `Due`, advance again.
 
-**Expected — both routes.** Refused both times: *"A corrective action needs an owner and a due date."*
+**Expected — Route B.** Refused both times: *"A corrective action needs an owner and a due date."*
+
+**Expected — Route A.** Refused both times — **but not by the `CorrectiveAction` list, and not immediately.**
+Nothing in formula 3 reads `Owner` or `Due`; those two conditions live in flow F3, which withdraws
+`Closure_Ready`, after which formula 1 refuses the *inspection's* close with the **`Inspection`** list's
+message. So the refusal is asynchronous and it arrives from a flow. ⚠ **Wait for F3 to complete before you
+advance**, or you will close the record inside the window and log a build defect that does not exist. Record
+this one as flow-enforced rather than validation-enforced; the distinction is the whole point of §5's log.
 
 **If it differs.** An action with no owner is a wish, and one with no due date is a wish with better grammar.
 
@@ -175,6 +208,17 @@ identity 1.
 Then sign in as identity 2 and do the same.
 
 **Expected — both routes.** Refused for the raiser and permitted for identity 2.
+
+⚠ **Pin the owner in the preconditions: identity 1 owns the action, identity 1 raised the non-conformance,
+identity 2 approves.** Formula 3 requires the approver to differ from the **owner** as well as the raiser, so
+the obvious two-identity setup — identity 2 as both owner and approver — is refused *correctly* and will be
+logged as a build defect that is not one. `examples/sample-corrective-actions.csv` row `CA-0155` is the
+arrangement that works.
+
+⚠ **Run the lazy way on a *fresh* action, not on the one you have just approved.** On an already-approved
+action the lazy save succeeds on a correctly-built system, because validation reads the stored shadow value —
+see the residual-gap paragraph in `docs/09-microsoft-lists-build.md` §3. That is a real weakness and it is a
+different one; testing it here will tell you your build is broken when it is not.
 
 **And run it the lazy way as well, because that is the way that finds the defect.** Set `Approved_By` to
 yourself and `Approved` to Yes in the *same* save, without pausing. That must also be refused. If it
@@ -205,7 +249,11 @@ name comparison also *permits* real self-approval whenever one person holds two 
 about the whole system.
 
 **Steps.** As an ordinary user with edit access, open the underlying table directly — datasheet or grid view,
-or any client other than your form. Set `Stage` on a `Draft` record to `Closed` and save.
+or any client other than your form. Set `Stage` to `Closed` on a **half-empty** `Draft` record — one with no
+result and no inspector — and save. The word *half-empty* matters: a `Draft` record that happens to be
+complete closes legally, because there is no transition-order enforcement on this route
+(`docs/09-microsoft-lists-build.md` §5),
+and a tester who uses a complete record will condemn a correct build.
 
 **Expected — Route B.** Refused. Column security grants Update on `Stage` only to the identity your rules run
 under, so the write does not land.
@@ -320,6 +368,36 @@ result: filter with `=` on a text column, collect, then count the collection. Ra
 **Log this test separately in the results record**, with the row count you tested at. "Verified at 3,000
 rows" is a materially different statement from "verified", and only one of them survives the question.
 
+### T17 · A flow that writes to its own list runs once and then stops
+
+**Proves.** That the self-trigger guard on each F-flow actually excludes the flow's own write — not that a
+condition is present, which T14 already covers for the transition rule, but that the condition's operands
+resolve to something on your tenant. Run it for every flow that writes to the list it triggers on: on Route
+A that is each of the F1 flows, F2, F3 and F4, one at a time, and it must pass before that flow is left
+switched on.
+
+**Why it exists.** A trigger condition that names a column key the connector does not use — the encoded
+`_x005f_` form where the trigger body carries the plain key, or the reverse — does not fail. It resolves to
+null, `coalesce()` turns null into an empty string, and a guard built on that is true on every save. Every
+run then succeeds, which is why nothing in the run history looks wrong. A failing version of this test, run
+after the fact on the kit's own first build, showed the flow had been running itself every thirty seconds
+for two days and had carried one test record to **version 2,938**. `docs/09-microsoft-lists-build.md` §4
+has the corrected conditions and §7 the account.
+
+**Steps.** With the flow switched on and nothing else touching the list, edit one field on one record — the
+field the flow reacts to — and note the record's version number. Open the flow's run history and count.
+Wait five minutes without touching the record. Count again, and read the version number again.
+
+**Expected — both routes.** Exactly one run for the edit. No further runs in the five minutes. The version
+number has climbed by the runs you can account for — your edit and the flow's one corrective write — and
+no more.
+
+**If it differs.** A second run seconds after the first, or any run at all during the five minutes, is the
+loop. Switch the flow off before anything else, let the queue drain, then open the trigger output of one
+run and read the column keys exactly as the body shows them; rewrite the condition with those keys and run
+this test again. Do not switch the flow back on until it passes. A version number that keeps climbing on a
+record nobody is editing is the same finding seen from the list, and it is the check to add to F5.
+
 ## 5 · The results record
 
 Fill this in as you go and keep it, headed with the environment name and the date.
@@ -342,6 +420,7 @@ Fill this in as you go and keep it, headed with the environment name and the dat
 | T14 | | | | | |
 | T15 | | | | | |
 | T16 | | | | | | ← record the row count you tested at |
+| T17 | | | | | | ← one row per flow tested |
 
 "Evidence" must point at something retrievable: a screenshot file name, an exported record, a flow run
 identifier. A tick in a box evidences only that someone had a pen.
@@ -379,7 +458,8 @@ actually there: validation settings hold one formula, and a gate pasted after an
 the gates are enforced against people using the form — a smaller claim, and this is its wording:
 
 > "Stage advances are controlled by rules in the application and by a rule that runs whenever a record
-> changes. The status column is not exposed on any form, but it is not permission-protected: this platform
+> changes. On Route B the status column is not exposed on any form; on Route A the user sets it and the server
+  refuses any item not legal at the stage claimed. Either way it is not permission-protected: this platform
 > tier has no column-level permissions, so a user with edit access to the list can set the status directly.
 > That is tested and logged as a known limitation, and managed by restricting edit access and reviewing the
 > change history."

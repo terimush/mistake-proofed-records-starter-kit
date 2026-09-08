@@ -51,7 +51,8 @@ to the same table, the gate is not there.
 **Correct — enforce on the data, at the transition.** The rule lives with the record, not with the screen.
 Any path that attempts an invalid stage change is rejected, whichever client attempted it. In practice this
 means a low-code business rule, a validation rule on the table, or a flow that runs on change and reverts a
-transition that fails its gate — and it means the status column is not directly editable by ordinary users
+transition that fails its gate — and, **where the platform allows it**, it means the status column is not directly
+editable by ordinary users
 at all; it only changes as a *result* of a gate passing.
 
 Build the weakest version too, but only as courtesy. A user should be told what's missing before they try.
