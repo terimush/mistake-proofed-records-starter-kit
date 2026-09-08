@@ -34,7 +34,8 @@ not what motivated the change.
 
 ## Releases, archiving and citation
 
-Each release is tagged in the repository at `https://github.com/terimush/hard-gate-starter-kit` and deposited in an archive that mints a DOI.
+Each release is tagged in the repository at `https://github.com/terimush/mistake-proofed-records-starter-kit` and deposited in an
+archive that mints a DOI.
 
 **Each tagged release receives its own DOI.** That version DOI resolves permanently to exactly the files in
 that release, which is what makes a citation checkable years later.

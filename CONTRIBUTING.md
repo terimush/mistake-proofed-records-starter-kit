@@ -29,7 +29,8 @@ If your objection is to the pattern rather than to a document, use
 `.github/ISSUE_TEMPLATE/this-would-not-work-here.md` instead. That template exists for shop-floor objections
 and it is the one I would most like to receive.
 
-The repository is at `https://github.com/terimush/hard-gate-starter-kit`. If issues are not the right channel for what you have, `https://github.com/terimush/hard-gate-starter-kit/issues`
+The repository is at `https://github.com/terimush/mistake-proofed-records-starter-kit`. If issues are not the right channel for
+what you have, `https://github.com/terimush/mistake-proofed-records-starter-kit/issues`
 reaches me.
 
 ## Proposing a worked example

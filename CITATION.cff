@@ -10,7 +10,7 @@
 #      If you do not register one, delete the orcid line entirely.
 
 cff-version: 1.2.0
-title: Hard-Gate Starter Kit
+title: "Mistake-Proofed Quality Records: starter kit"
 message: >-
   If you use this kit, please cite it using the metadata in this file.
 type: dataset  # CFF 1.2.0 offers only "software" or "dataset"; this kit is
@@ -56,5 +56,5 @@ keywords:
 license: MIT
 version: 1.0.0
 date-released: "{{RELEASE_DATE}}"
-repository-code: "https://github.com/terimush/hard-gate-starter-kit"
-url: "https://github.com/terimush/hard-gate-starter-kit"
+repository-code: "https://github.com/terimush/mistake-proofed-records-starter-kit"
+url: "https://github.com/terimush/mistake-proofed-records-starter-kit"

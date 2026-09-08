@@ -1,9 +1,12 @@
-# Hard-Gate Starter Kit
+# Mistake-Proofed Quality Records
 
-**A free, low-code pattern for enforceable quality records in small manufacturing.**
+**Starter kit — records that can’t be skipped, on the software you already own.**
 
-Build inspection and non-conformance records that *cannot* be completed out of order, left half-filled, or
-back-dated — using software your business most likely already licenses. No new platform, no consultant, no
+A free, low-code pattern for enforceable quality records in small manufacturing. The pattern itself is what practitioners call a *hard gate*; that term is used throughout the documents.
+
+Build inspection and non-conformance records that *cannot* advance without the evidence each stage requires,
+and cannot be left half-filled — using software your business most likely already licenses. No new platform, no
+consultant, no
 per-seat quality-system subscription.
 
 ---
@@ -40,7 +43,9 @@ documentation is written so it can be rebuilt anywhere with a forms layer and a 
 almost certainly already have, and the gates will be genuinely enforced — Lists evaluates validation on the
 server when the item is saved, so a correctly written rule holds whichever client wrote the record, including
 someone typing into the grid. That is the central claim of this kit, on a standard licence.
-`docs/09-microsoft-lists-build.md` has the formulas.
+`docs/09-microsoft-lists-build.md` has the formulas. The kit has been built from its own instructions, by
+hand; the flows that build produced were reviewed on 7 September 2026, two defects were found and corrected,
+and the corrections are folded back into the documents.
 
 What Lists cannot do is lock one column against one user, so a field can be altered between stages until the
 record is locked at closure. Dataverse fixes that and costs a premium licence.
@@ -51,6 +56,10 @@ it, the free route is the right route.
 
 **Start with `START-HERE.md`.** It tells you what to read, in what order, and how far in to go before
 deciding whether any of this is worth your time.
+
+**If a term is unfamiliar at any point** — canvas app, delegation, shadow column, the grid, unique permission
+scope — **`GLOSSARY.md`** defines every word this kit uses, written for someone who runs a quality system
+rather than someone who builds software.
 
 ### The pattern
 
@@ -81,10 +90,14 @@ The dashboard is the exception: it has no gates and enforces nothing, by design.
 | File | What it is |
 |---|---|
 | `examples/incoming-inspection-checklist.md` | Incoming material inspection. The easiest first build. |
-| `examples/nonconformance-intake.md` | A non-conformance record that will not close without causal analysis somebody actually did. **If you build only one thing, build this.** |
-| `examples/production-hard-gate-checklist.md` | In-process production checks, with the condition that makes retrospective entry visibly impossible. The hardest of the three, because it touches people paid to make parts rather than to fill in records. |
+| `examples/nonconformance-intake.md` | A non-conformance record that will not close without causal analysis somebody actually did. **Build this second, and only ever build this if you build one.** Highest value, harder than the inspection. |
+| `examples/production-hard-gate-checklist.md` | In-process production checks, with the condition that makes retrospective entry visible in the record, though not impossible. The hardest of the three, because it touches people paid to make parts rather than to fill in records. |
 | `examples/compliance-status-dashboard.md` | Six read-only panels. The only artefact here that enforces nothing — half of it exists to show you how your own records might be worthless. |
-| `examples/*.csv` | Fabricated sample records for every table, including records left mid-stage so you can watch the gates refuse. |
+| `examples/*.csv` | Fabricated sample records for every table, including records left mid-stage so you can see what a populated system looks like. Every shipped row is *legal* at the stage it sits at — to watch a gate refuse, create a record yourself and try to cheat, per `docs/03-implementation-guide.md` step 7. |
+
+| Reference | What it is |
+|---|---|
+| `GLOSSARY.md` | Every term the kit uses without stopping to explain it — *canvas app*, *delegation*, *shadow column*, *the grid*, *unique permission scope* — grouped by when you meet it. |
 
 ### Teaching it
 

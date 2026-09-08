@@ -9,7 +9,121 @@ All notable changes to this kit are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- **Renamed.** The kit is now *Mistake-Proofed Quality Records* (repository `mistake-proofed-records-starter-kit`). "Hard gate" remains the name of the pattern inside the documents; only the title people meet first has changed.
+
+- **The kit has been built from its own instructions**, by hand and with a stopwatch, in a personal
+  Microsoft 365 tenant, following `WI-M365-01`; that tenant is no longer accessible and the system in the
+  screenshots was rebuilt by the same process in a second one. `START-HERE.md` now says so, in one paragraph,
+  and `docs/09-microsoft-lists-build.md` §7 records what the build taught.
+- **The time estimate was replaced with a measured figure.** "An evening, or a weekend" in
+  `docs/03-implementation-guide.md` and `START-HERE.md` becomes about two working days: 8.78 hours actual
+  against a 4.36-hour plan for three lists, three formulas and four flows (stopwatch-timed, self-reported,
+  one build). `docs/09-microsoft-lists-build.md` §4 carries the per-part table; figures not recorded were
+  left as bracketed placeholders rather than guessed.
+- **The placeholder build figures are filled in.** The four flow rows of the cost table in
+  `docs/09-microsoft-lists-build.md` §4 now carry the figures from a second, instrumented build of the flows
+  alone on 5 September 2026 (F1a 34.7 min, F1b 12.0 min build and test, F1c 7.7 min, F2a 21.8 min; 79.2 min
+  with the failure-log list), stated as not summing with the 8.78 h of the first build. The lists-and-columns
+  row says "not separately timed", with the 316 minutes the first build leaves for lists, columns and flows
+  together; the unbuilt flows are said to be unbuilt. `docs/05-rollout-runbook.md` and
+  `training/practitioner-talk.md` lose the last two "an evening" estimates.
+- **A review of the running flows on 7 September 2026 found two defects, both corrected.** Every trigger
+  condition in F1a, F1b and F1c, and the condition inside F2a, addressed the shadow columns by the encoded
+  internal name (`body/Inspector_x005f_Email`) where the connector's trigger body used the plain key; the
+  reference resolved to null, the self-trigger guard was true on every save, and F1a ran itself every thirty
+  seconds for two days. F2a's reverse-lookup write was also wired to the parent's existing value rather than
+  the trigger's `ID`, so it could never set the lookup; its condition carried an empty row and the flow had
+  never been renamed. All conditions are rewritten with plain keys and the F2a wiring is corrected; the exact
+  expressions are now in `docs/09-microsoft-lists-build.md` §4, *Trigger conditions and the F2 write*, with
+  the read-back rule, and `docs/03-implementation-guide.md`'s loop warning carries the rule in two sentences.
+  F2a has still not been run.
+- **`docs/06-validation-and-test-plan.md` gains T17, the loop test** — one edit, exactly one run, five
+  minutes of silence, and a version number that did not climb — which each F-flow must pass before it is
+  left on.
+  `docs/08-troubleshooting-and-faq.md` gains *"My flow runs every thirty seconds and every run succeeds"*
+  and *"The reverse lookup on the inspection never fills"*.
+- **Formulas are budgeted as design work, not data entry.** The three validation formulas took 211 minutes
+  against 31 allowed — about 40 % of the build. `docs/03-implementation-guide.md` says so once;
+  `docs/09-microsoft-lists-build.md` §4 says why.
+- **"My lists" versus site lists is now the first warning in the build.** Validation settings do not exist
+  on personal lists in the Microsoft Lists app. A boxed warning opens `docs/09-microsoft-lists-build.md`,
+  `START-HERE.md` gives it one sentence, and `docs/08-troubleshooting-and-faq.md` gains *"I can't find
+  Validation settings"*, including what to do with data already entered.
+- **The build order in `docs/09-microsoft-lists-build.md` §4 is annotated with the sequence that actually
+  worked** — `WI-M365-01` Parts A to F mapped onto the ten steps, including the formulas-with-each-list
+  order the work instruction used, why it is safe, and the prediction-before-test and stopwatch practices
+  the step table had not asked for.
+
+### Added
+
+- **`GLOSSARY.md`** — every term the kit uses and does not stop to explain, grouped by when you meet it and
+  written for someone who runs a quality system rather than someone who builds software. A cold first reader
+  could not define *canvas app*, *delegation*, *shadow column*, *the grid*, *on the server* or *tenant* after
+  thirty minutes with the kit, and every one of them is load-bearing.
+- **`examples/sample-standalone-corrective-actions.csv`** — the corrective actions belonging to the
+  standalone non-conformance example, with the `Verified_On` column that example adds. They were previously
+  mixed into the core file, where their parents do not exist.
+
+### Fixed
+
+- **Formula 1's closure clause was satisfied by a machinery column being absent** — the exact shape
+  `docs/01-data-model.md` calls the most expensive mistake in the kit. Re-anchored on `Result`, which the user
+  sets. A dispositioned rejection could previously be closed in one grid save by clearing
+  `NC_Reference_Text`.
+- **Formula 2 did not enforce what its prose claimed.** It compared each causal level only against the one
+  above it, so *"Operator error / Training gap / Operator error"* saved cleanly. All three pairs are now
+  compared.
+- **Formula 3 excused blank shadow columns**, because a comparison against an empty column is unequal. Both
+  operands of both comparisons are now required to be present, and the `Nonconformance` lookup on
+  `CorrectiveAction` is a required column so the raiser's address can always be copied down.
+- **Flow F3 tested the wrong column.** Its specification said a corrective action "carries an `Approved_By`,
+  which the list has already refused if it matched the raiser" — false, because formula 3 short-circuits
+  while `Approved` is No, which is its default. A self-approval could reach closure with no refusal anywhere
+  in the chain. F3 now tests `Approved`.
+- **The yes/no comparison was written two ways** — `=TRUE` in formula 1, `<>"Yes"` in formula 3. Unified on
+  the bare boolean, with an instruction to confirm it on your own tenant before trusting either.
+- **"Blocks the reverse attack" was an overclaim.** Clearing `Result` is refused; *changing* it is not, and
+  the record then closes as an accepted receipt. `docs/03-implementation-guide.md` step 7 always said so;
+  `docs/09-microsoft-lists-build.md` now agrees, and the ceiling table names the consequence.
+- **Nothing in the Lists build advanced a record**, while three other documents described a transition
+  mechanism that does not exist on that route. Resolved in favour of what the build actually does: on Route A
+  the user sets `Stage` and validation refuses illegal states. `docs/01-data-model.md`,
+  `docs/03-implementation-guide.md` and `docs/09-microsoft-lists-build.md` now say the same thing, and
+  `Stage` stays on the form.
+- **The thirty-minute path was unrunnable by the reader it describes.** It required a created-date column and
+  two SQL queries. It now branches on whether you have such a system, tells the reader who does not that they
+  already have their answer, gives a spreadsheet method for the reader who does, and ends in one decision and
+  one action.
+- **`docs/08-troubleshooting-and-faq.md`** described a closed-with-nothing-filled-in record as "the platform,
+  not a bug". Formula 1 refuses exactly that record; the symptom now points at the three build faults that
+  actually cause it.
+- **Three different answers to "what do I build first"** across `README.md`, `START-HERE.md` and
+  `docs/03-implementation-guide.md`. One answer now, with the reasoning: incoming inspection first because it
+  is the easiest to learn on, the non-conformance intake second because that is where the value is.
+- **`docs/06-validation-and-test-plan.md`** — T06's second half expected a refusal no formula can make on
+  Route A; T07's precondition described a record formula 2 refuses outright; several tests expected per-field
+  messages on a route that has one message per list; T01 could not pass before flow F3 existed. All corrected
+  per route.
+- **The flow inventory read as five flows.** A SharePoint trigger binds to one list, so it is nine, plus the
+  archive job. Every flow's write is itself subject to validation and can be refused silently, so every flow
+  now carries the logging instruction only F3 had.
+- **The closure lock had two unstated failure modes** — it needs a *site* owner connection, not a list owner,
+  or the flow locks itself out of the records it must revert; and a reverted closure left a record nobody
+  could edit, because nothing re-granted the permissions closure removed.
+- **The archive job destroyed the evidence it exists to preserve.** Archiving is a create-plus-delete, so the
+  copy carries the service account and today's date. The original `Created` and `Created By` must be carried
+  into columns of your own first.
+- **Column settings the formulas depend on were never stated** — choice defaults cleared, fill-in choices off
+  on `Stage`, `Enforce unique values` on the three reference columns, `Quantity_Received` required. Each was
+  a hole in a formula rather than a preference.
+- **Four columns marked "system-set" had no writer named**, and the direction of the
+  `Inspection`↔`Nonconformance` link was unstated — linking from the wrong side leaves a record that silently
+  cannot advance. `Complete` was added to `CorrectiveAction` so `Completed_On` has an event to hang off.
+- **Sample data** — `examples/sample-corrective-actions.csv` carried an extension column and three rows whose
+  parents live in another example's file; `examples/sample-data.csv` set `Closure_Ready` true on accepted
+  receipts that flow F3 would set false.
 
 ## [1.0.0] — {{RELEASE_DATE}}
 
@@ -118,5 +232,5 @@ First public release.
   assumption underneath it is unconfirmed and the body of the kit should not depend on it. Sample data and
   metadata were corrected to match.
 
-[Unreleased]: https://github.com/terimush/hard-gate-starter-kit/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/terimush/hard-gate-starter-kit/releases/tag/v1.0.0
+[Unreleased]: https://github.com/terimush/mistake-proofed-records-starter-kit/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/terimush/mistake-proofed-records-starter-kit/releases/tag/v1.0.0
