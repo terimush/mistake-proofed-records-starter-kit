@@ -125,9 +125,9 @@ All notable changes to this kit are recorded here. The format follows
   parents live in another example's file; `examples/sample-data.csv` set `Closure_Ready` true on accepted
   receipts that flow F3 would set false.
 
-## [1.0.0] — {{RELEASE_DATE}}
+## [1.0.0] — 2026-08-20
 
-First public release.
+Repository import. Not tagged and not released; first release is 1.1.0. Kept as the baseline the 1.1 changes are measured against.
 
 ### Added
 
@@ -232,5 +232,5 @@ First public release.
   assumption underneath it is unconfirmed and the body of the kit should not depend on it. Sample data and
   metadata were corrected to match.
 
-[Unreleased]: https://github.com/terimush/mistake-proofed-records-starter-kit/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/terimush/mistake-proofed-records-starter-kit/releases/tag/v1.0.0
+[Unreleased]: https://github.com/terimush/mistake-proofed-records-starter-kit/compare/5481729f1949a05d89e8af28d09a6adc7f0f929d...HEAD
+[1.0.0]: https://github.com/terimush/mistake-proofed-records-starter-kit/commit/5481729f1949a05d89e8af28d09a6adc7f0f929d

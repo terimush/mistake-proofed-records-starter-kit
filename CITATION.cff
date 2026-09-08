@@ -1,13 +1,9 @@
 # Citation metadata. GitHub renders a "Cite this repository" box from this file,
 # and Zenodo reads it when minting the DOI.
 #
-# BEFORE RELEASE, set three things (VERSIONING.md explains how releases are cited):
-#   1. date-released  -> the actual date you tag the release
-#   2. repository-code / url -> your real GitHub URL
-#   3. orcid -> your ORCID iD if you register one (recommended; free, ~5 minutes,
-#      at https://orcid.org/register). It is a permanent author identifier that
-#      ties this kit, the article, and anything later to one verifiable identity.
-#      If you do not register one, delete the orcid line entirely.
+# BEFORE RELEASE (VERSIONING.md explains how releases are cited):
+#   date-released -> the actual date the version below is tagged. Every other
+#   field is final. The ORCID iD is the author's registered identifier.
 
 cff-version: 1.2.0
 title: "Mistake-Proofed Quality Records: starter kit"
@@ -18,7 +14,7 @@ type: dataset  # CFF 1.2.0 offers only "software" or "dataset"; this kit is
 authors:
   - family-names: Mushangwe
     given-names: Tererai
-    orcid: "{{ORCID}}"
+    orcid: "https://orcid.org/0009-0008-6704-6632"
 abstract: >-
   A free, MIT-licensed low-code pattern for building enforceable quality records
   in small and mid-sized manufacturing. A hard gate is a rule the software
@@ -54,7 +50,7 @@ keywords:
   - process control
   - audit evidence
 license: MIT
-version: 1.0.0
+version: 1.1.0
 date-released: "{{RELEASE_DATE}}"
 repository-code: "https://github.com/terimush/mistake-proofed-records-starter-kit"
 url: "https://github.com/terimush/mistake-proofed-records-starter-kit"
