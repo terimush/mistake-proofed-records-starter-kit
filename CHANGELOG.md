@@ -9,7 +9,46 @@ All notable changes to this kit are recorded here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **Three of the four published Gate 1 trigger conditions were wrong and are corrected.** The four P1 flows
+  were exercised against records for the first time on 8 September 2026, and the session found that two of
+  them never fired at all while a third looped. `docs/09-microsoft-lists-build.md` §4 now carries the tested
+  expressions: F1b becomes `@equals(body/Modified, body/Created)` (fire on creation only, loop-safe by
+  construction) in place of a guard that waited for a shadow column to be empty; F2a becomes
+  `@not(empty(body/Inspection))` in place of `body/Inspection/Id`. F1a and F1c's conditions were already
+  correct and are unchanged.
+- **F1c wrote the owner's e-mail into the approver's shadow column.** The flow was built as a copy of F1a
+  and inherited `Owner/Email` as the source for both `Owner_Email` and `Approved_By_Email`, so it put a
+  wrong value into one of the three columns formula 3 adjudicates — and, because that column could then
+  never agree with an empty `Approved_By`, it also looped. `docs/09-microsoft-lists-build.md` §4 now
+  publishes F1c's full Update item mapping with the correct source.
+- **An encoded column name survived the 7 September correction pass.** F1c's `Completed_On` expression still
+  named `Completed_x005f_On`, so the "already stamped?" test was always true and the flow re-stamped the
+  completion time on every run. Corrected, and the rule added: apply an encoding fix across the whole
+  definition, then re-test.
+- The claim that F2a's corrected wiring was untested is removed; F2a has now been tested end to end.
+
+### Added
+
+- **`docs/06-validation-and-test-plan.md` gains T18 and T19.** T18 proves a trigger condition actually fires
+  — the opposite failure to T17's loop, and the one that leaves a flow On, clean and silent. T19 proves a
+  stamp is written once and then preserved, a fault invisible on the first save. Both carry rows in the
+  results record.
+- **`docs/09-microsoft-lists-build.md` §7 gains *What the first test session taught*:** that a null column is
+  absent from the trigger payload rather than present-and-empty; that silent non-firing is a failure mode
+  which looks like success; that a flow made by *Save as* inherits the original's field mappings, which is
+  both why F1b took 3.9 minutes against F1a's 34.7 and how the mapping defect propagated; and that lists
+  must be matched by GUID, not by name.
+- **`docs/02-hard-gate-pattern.md` §5 gains the refusal check**, with the list's own refusal message captured
+  from the reference build — the first time the separation-of-duties gate has been observed refusing a save
+  — together with the caution that the observed refusal was over-determined, and that a gate reading shadow
+  columns can be corrupted by the flows that maintain them.
+- **`docs/08-troubleshooting-and-faq.md` gains two entries:** *My flow is switched on, the checker is clean,
+  and it never runs*, and *The completion timestamp keeps moving*.
+
 ### Changed
+
 
 - **Renamed.** The kit is now *Mistake-Proofed Quality Records* (repository `mistake-proofed-records-starter-kit`). "Hard gate" remains the name of the pattern inside the documents; only the title people meet first has changed.
 
