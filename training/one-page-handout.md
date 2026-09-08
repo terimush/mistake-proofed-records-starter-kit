@@ -1,4 +1,4 @@
-# Hard gates — one page
+# Mistake-Proofed Quality Records — one page
 
 Take this with you. Everything on it works against a system you already run.
 
@@ -59,7 +59,7 @@ Both are a single query against a system you already have. Neither is flattering
 
 ## Where to get the kit
 
-Free, MIT licensed, no sign-up, nothing to buy and nobody to call: `https://github.com/terimush/hard-gate-starter-kit`
+Free, MIT licensed, no sign-up, nothing to buy and nobody to call: `https://github.com/terimush/mistake-proofed-records-starter-kit`
 
 Start with `START-HERE.md`. If you have 15 minutes, read `docs/02-hard-gate-pattern.md` and nothing else.
 

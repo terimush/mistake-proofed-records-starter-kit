@@ -132,7 +132,8 @@ management review and a great deal else that this does not touch.
 
 ### 0:43 – 0:45 · Where to get it
 
-MIT licensed, free, no sign-up, nothing to buy and nobody to call. It is at `https://github.com/terimush/hard-gate-starter-kit`.
+MIT licensed, free, no sign-up, nothing to buy and nobody to call. It is at
+`https://github.com/terimush/mistake-proofed-records-starter-kit`.
 
 If your contracts carry obligations you are unsure about, **APEX Accelerators** — U.S. Department of Defense
 funded, formerly PTACs, with a centre serving every state — and **MEP centres** provide free counselling.
@@ -168,8 +169,9 @@ providers, control of nonconforming outputs, corrective action, documented infor
 document is explicit about the much longer list it does not reach. Nothing built from this is evidence of
 certification against anything.
 
-**"What does it cost?"** The documents are free. The build costs the time — an evening if you have used a
-low-code forms tool before, a weekend if you have not, plus an afternoon adapting the stages. Nothing else,
-on the licence most shops already hold. Per-column locking costs a premium licence, which you should price
+**"What does it cost?"** The documents are free. The build costs the time — about two working days for the
+first working gate set, which is a measured figure rather than a guess: 8.78 hours, stopwatch-timed, one
+build, against a plan that allowed 4.36 — plus an afternoon adapting the stages. Nothing else, on the
+licence most shops already hold. Per-column locking costs a premium licence, which you should price
 for your own tenant rather than take from me. Do not quote a figure from the stage; licensing changes, and a
 wrong number said with confidence is worse than no number.

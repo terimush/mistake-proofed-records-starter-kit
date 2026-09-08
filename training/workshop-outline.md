@@ -163,7 +163,7 @@ written.
 ## What to send attendees home with
 
 - **`training/one-page-handout.md`**, printed, one per chair before anyone sits down.
-- **The repository link**, `https://github.com/terimush/hard-gate-starter-kit`, on the last slide and on the handout.
+- **The repository link**, `https://github.com/terimush/mistake-proofed-records-starter-kit`, on the last slide and on the handout.
 - **Their own written gate**, on paper, from the exercise.
 - **The two analytical checks**, framed as the one thing they can do on Monday without building anything.
 - **APEX Accelerators and MEP centres** — free, publicly funded, and better first calls than any vendor if
