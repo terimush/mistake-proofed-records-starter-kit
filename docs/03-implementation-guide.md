@@ -122,9 +122,18 @@ reprocessing its own write. Do this before the flow ever touches real data — a
 unpleasant to unwind, and can exhaust your request limits and get the flow suspended. Never write a trigger
 condition against a column key you have not read back from a real run's trigger output — a condition that
 names a key the connector does not use resolves to nothing, and a guard built on nothing is true on every
-save, including the flow's own (`docs/09-microsoft-lists-build.md` §7 records the two days that cost). And
-the loop check — one edit, exactly one run, then silence for five minutes — must pass before any F-flow is
-left switched on.
+save, including the flow's own (`docs/09-microsoft-lists-build.md` §7 records the two days that cost).
+
+**Reading the key back is only half of it: you must also watch the condition fire.** A key that is correct
+for an action is not evidence about the trigger, and the same wrong guard fails in two opposite directions —
+loudly, by running on every save, or silently, by never running at all. Three of this kit's four flows
+shipped a condition that was wrong, and every one of them showed a clean flow checker and a green Status
+while doing it. Two traps account for most of it: **a column that is null on the item is absent from the
+trigger payload entirely**, so a guard that waits for a column to be empty is asking about a key that is not
+there; and **an expression that resolves inside an action can still resolve to null in a trigger condition.**
+So: put the condition in, make one change that should qualify, and confirm exactly one run appears. If none
+does, the condition is wrong, however reasonable it looks. Then the loop check — one edit, exactly one run,
+then silence for five minutes — must pass before any F-flow is left switched on.
 
 **Do this in a sandbox first.** Build it, run fake records through it, try to break your own gates. Only then
 point it at real work.

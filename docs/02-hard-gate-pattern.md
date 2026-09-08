@@ -110,3 +110,24 @@ system shows records that stay open for as long as the job takes.
 
 Both checks are a single query and neither is flattering. Run them anyway. A quality system nobody audits is
 just a database with opinions.
+
+**The refusal check, which comes before either.** Neither of the checks above tells you the gate works. They
+tell you how the system is being used, assuming it does. The only thing that establishes a gate is watching
+it refuse a save it ought to refuse — and then reading the message it gave.
+
+Do it deliberately, on a throwaway record: construct the violation the gate exists to stop, try to commit it,
+and capture what comes back. On this kit's own reference build, setting the approver of a corrective action
+to the same person as its owner and then marking it approved produced this, from the list itself:
+
+> An approved corrective action needs the owner, raiser and approver e-mails all present, and the approver
+> must differ from both the raiser and the owner.
+
+The record was not saved. That single observation is worth more than any amount of description, and it is
+the artefact to keep: a gate that has never been seen to refuse anything is a claim, not a control.
+
+Two cautions from running it. Construct the violation so that **only one clause can be failing** — the
+refusal above is over-determined, because the test record also had an empty raiser e-mail, so it does not by
+itself isolate the approver-differs rule. And note what the check does *not* cover: the gate reads shadow
+columns that a flow maintains, so a flow writing a wrong value into one of them corrupts the gate's input
+without the gate ever appearing to fail. That happened here — see `docs/09-microsoft-lists-build.md` §7.
+Prove the flows that feed a gate, not only the gate.

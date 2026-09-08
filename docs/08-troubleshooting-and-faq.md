@@ -76,6 +76,53 @@ page. Rewrite the condition with those keys; the corrected expressions for the f
 you switch the flow back on. Never write a trigger condition against a key you have not read back from a
 real run.
 
+### My flow is switched on, the checker is clean, and it never runs
+
+**Symptom.** The flow's Status is On, the flow checker reports no errors, the trigger points at the right
+list, and the run history is empty — or has not moved since the last time the flow was edited. You make the
+change the flow is supposed to react to and nothing happens. There is no error anywhere, because nothing
+ran.
+
+**Cause.** Almost always the trigger condition. This is the quiet twin of the thirty-second loop above: the
+same class of wrong guard, resolving the other way. Two causes account for the ones found in the kit's own
+build. First, **a column that is null on an item is absent from the trigger payload altogether**, not
+present-and-empty — so a guard of the form "run while this shadow column is still blank" asks about a key
+that is not in the body in exactly the state it is meant to catch, and never fires. Second, **an expression
+that resolves inside an action can still resolve to null in a trigger condition**: one flow's guard tested
+`body/Inspection/Id` and never ran, while an action in the same flow resolved that identical path to the
+parent's Id on the run that finally happened. Do not reason about which paths "should" work — two flows in
+this kit disagree about that in the same tenant, and the reason was never established.
+
+**Fix.** Isolate the guard before you theorise. Remove the trigger condition, save, make the change again,
+and see whether the flow runs. If it does, the condition was the fault and the body of the flow is fine.
+Now open that run's trigger output and read which keys are actually present. Write the new guard against
+keys that are always there — `Modified` and `Created` are, and `@equals(body/Modified, body/Created)` is a
+sound "on creation only" guard which is also loop-safe, because the flow's own write changes `Modified`.
+Then run `docs/06-validation-and-test-plan.md` **T18** to prove it fires and **T17** to prove it does not
+loop. Do not leave a flow condition-free while you think about it: with no guard, a flow that writes to its
+own list will loop.
+
+**The habit that prevents it.** Treat an empty run history as a defect until proven otherwise. A flow that
+has never run has never been tested, whatever its Status says.
+
+### The completion timestamp keeps moving
+
+**Symptom.** `Completed_On` was stamped correctly when the action was marked complete. Later, someone edits
+an unrelated field — a note, a description — and the timestamp changes to the time of that edit. The record
+now reports a completion time that tracks whoever touched it last.
+
+**Cause.** The stamp expression has an "already stamped?" test, and that test is reading a key that resolves
+to null, so it is always true and the flow re-stamps `utcNow()` every run. In the kit's own build the cause
+was an action expression still naming the encoded `Completed_x005f_On` while the trigger condition beside it
+in the same flow had been corrected to the plain key during an earlier pass. Symptom-led fixes leave
+siblings behind.
+
+**Fix.** Search the **whole** flow definition for the encoded form of that column name — trigger conditions
+and action expressions both — and correct every hit, not just the one you were looking at. Then run
+`docs/06-validation-and-test-plan.md` **T19**: stamp it, then edit an unrelated field, and confirm the stamp
+does not move. This fault is invisible on the first save, so a test that stops after one edit will pass a
+broken flow.
+
 ### The reverse lookup on the inspection never fills
 
 **Symptom.** F2a runs and succeeds, `NC_Reference_Text` is written correctly onto the inspection, but the

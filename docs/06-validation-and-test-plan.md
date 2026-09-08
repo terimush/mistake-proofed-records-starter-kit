@@ -384,6 +384,9 @@ after the fact on the kit's own first build, showed the flow had been running it
 for two days and had carried one test record to **version 2,938**. `docs/09-microsoft-lists-build.md` §4
 has the corrected conditions and §7 the account.
 
+T17 catches the loud failure. **T18 catches its opposite** — the same class of wrong guard, resolving the
+other way, so the flow never runs at all. Run both.
+
 **Steps.** With the flow switched on and nothing else touching the list, edit one field on one record — the
 field the flow reacts to — and note the record's version number. Open the flow's run history and count.
 Wait five minutes without touching the record. Count again, and read the version number again.
@@ -397,6 +400,60 @@ loop. Switch the flow off before anything else, let the queue drain, then open t
 run and read the column keys exactly as the body shows them; rewrite the condition with those keys and run
 this test again. Do not switch the flow back on until it passes. A version number that keeps climbing on a
 record nobody is editing is the same finding seen from the list, and it is the check to add to F5.
+
+### T18 · A trigger condition that should fire, fires
+
+**Proves.** That the guard on each F-flow admits the saves it is supposed to admit. T17 proves the condition
+excludes the flow's own write; this proves it does not exclude everything. Run it for every flow with a
+trigger condition, before T17 and before the flow is trusted.
+
+**Why it exists.** A wrong trigger condition fails in two directions, and only one of them is loud. The
+quiet one is worse: the flow sits switched on, the flow checker is clean, the Status is green, the run
+history is empty, and nothing happens. On the kit's own build, two of four flows were in that state — one
+of them for three days — and nobody had reason to look, because there is nothing to see. Two traps produce
+it. **A column that is null on the item is absent from the trigger payload altogether**, so a guard that
+waits for a column to be empty asks about a key that is not there in exactly the state it is meant to catch.
+And **an expression that resolves inside an action can still resolve to null in a trigger condition** — the
+same path read the parent's Id correctly inside the flow while returning nothing to the guard.
+
+**Steps.** With the flow switched on, make one change that the condition is supposed to admit — set the
+person column the flow shadows, or create the record it stamps. Wait two minutes. Open the run history.
+
+**Expected — both routes.** Exactly one run, and the column the flow maintains now holds the right value.
+
+**If it differs.** No run means the condition is wrong, not that the platform is slow. Do not adjust it by
+inspection. Remove the condition, save, make the same change again, and open the trigger output of the run
+that results: read which keys are actually present in the body, and write the guard against those. Prefer
+a key that is always present — `Modified` and `Created` are, and `@equals(body/Modified, body/Created)` is a
+sound "on creation only" guard that is loop-safe by construction, because the flow's own write changes
+`Modified`. Then re-run T18, and T17 after it.
+
+**Record the trigger output key list in the evidence column**, not just a tick. It is the thing the next
+person will need.
+
+### T19 · A stamp is written once and then preserved
+
+**Proves.** That a timestamp or shadow value the flow writes on a transition is not rewritten on every
+subsequent save. Run it for any flow that stamps a completion or approval time.
+
+**Why it exists.** This fault is invisible on the first save — the stamp appears, correctly, and a test that
+stops there passes a broken flow. It shows up only on the *second* edit, when an unrelated change moves the
+timestamp to the time of that change. On the kit's own build the cause was an action expression still
+naming the encoded `Completed_x005f_On` while the trigger condition beside it had been corrected to the plain
+key: the "already stamped?" test read null, was therefore always true, and the flow re-stamped `utcNow()`
+every run. A completion time that silently tracks the last edit is worse than no completion time, because it
+looks like evidence.
+
+**Steps.** Set the field that triggers the stamp and let the flow run. Record the stamped value. Now change
+an unrelated field on the same record — a description, a note — and save. Wait two minutes.
+
+**Expected — both routes.** The stamp is unchanged, to the second. No run at all is the better outcome
+here, and is what a correct guard gives you.
+
+**If it differs.** A stamp that moved means the preserve branch is reading a key that resolves to null.
+Search the **whole** flow definition for the encoded form of that column name, not only the place the symptom
+appeared — a symptom-led fix leaves siblings behind, which is exactly how this one survived an earlier
+correction pass. Fix every hit, then run T19 again.
 
 ## 5 · The results record
 
@@ -421,6 +478,8 @@ Fill this in as you go and keep it, headed with the environment name and the dat
 | T15 | | | | | |
 | T16 | | | | | | ← record the row count you tested at |
 | T17 | | | | | | ← one row per flow tested |
+| T18 | | | | | | ← one row per flow tested; record the trigger output keys |
+| T19 | | | | | | ← one row per stamping flow tested |
 
 "Evidence" must point at something retrievable: a screenshot file name, an exported record, a flow run
 identifier. A tick in a box evidences only that someone had a pen.

@@ -702,15 +702,21 @@ test proves one clause, not the formula.
 
 ### Trigger conditions and the F2 write — the exact expressions
 
-These are the four Gate 1 trigger conditions and the F2a wiring as they stand after the review of 7 September
-2026, which found that every condition in the first build addressed the shadow columns by their encoded
-internal name (`body/Inspector_x005f_Email` and so on) while the connector's trigger body in that tenant used
-the plain key. The encoded reference resolved to null, `coalesce()` made it an empty string, and the
+These are the four Gate 1 trigger conditions and the F1c/F2a wiring as they stand after the review of
+7 September 2026 **and the test session of 8 September 2026, in which all four flows were exercised against
+records for the first time.** Three of the four conditions published in earlier drafts of this document were
+wrong, and each was wrong in a way that no checker reported. Read §7 before you copy anything here.
+
+The 7 September review found that every condition in the first build addressed the shadow columns by their
+encoded internal name (`body/Inspector_x005f_Email` and so on) while the connector's trigger body in that
+tenant used the plain key. The encoded reference resolved to null, `coalesce()` made it an empty string, and the
 self-trigger guard was true on every save, including the flow's own write. §7, *The column-name trap that
 hid inside the first build*, has the account of what that did; this subsection has the corrected text so
 that nobody has to rediscover it. **The rule is: never write a trigger condition against a column key you
-have not read back from a real run's trigger output.** Save the flow with no condition, edit one item, open
-that run, and copy the key exactly as the body shows it. Which form you get — plain or `_x005f_` — depends
+have not read back from a real run's trigger output — and never leave one in place until you have watched it
+fire.** Save the flow with no condition, edit one item, open that run, and copy the key exactly as the body
+shows it. Then put the condition back and make one qualifying change: if no run appears, the condition is
+wrong, however reasonable it looks. Which form you get — plain or `_x005f_` — depends
 on how the column was created and on the connector, not on what the list settings page displays, so the
 keys below are what worked in one tenant and are the thing to check first in yours.
 
@@ -720,11 +726,29 @@ F1a, on `Inspection` — run only when the person column and its shadow disagree
 @not(equals(coalesce(triggerOutputs()?['body/Inspector/Email'], ''), coalesce(triggerOutputs()?['body/Inspector_Email'], '')))
 ```
 
-F1b, on `Nonconformance` — run only while the shadow column is still blank:
+F1b, on `Nonconformance` — run **only on creation**:
 
 ```
-@empty(coalesce(triggerOutputs()?['body/Raised_By_Email'], ''))
+@equals(triggerOutputs()?['body/Modified'], triggerOutputs()?['body/Created'])
 ```
+
+**This replaces the obvious version, which does not work.** Earlier drafts published
+`@empty(coalesce(triggerOutputs()?['body/Raised_By_Email'], ''))` — fire while the shadow column is still
+blank. On 8 September 2026 that flow was switched on and a new non-conformance created with
+`Raised_By_Email` empty. It did not fire. Not on the create, not on a later modify, not at all. Removing the
+condition made it fire on the next poll and stamp all three columns correctly, so the fault was the guard
+alone.
+
+The trigger output of that run says why: **a column that is null on the item is absent from the trigger
+payload altogether.** The body carried `ID`, `NC_Reference`, `Description`, `Modified`, `Created`, `Author`
+and `Editor`, and no `Raised_By`, `Raised_On`, `Raised_By_Email`, `Inspection`, `Severity` or `Cause_Level_*`
+— every column that happened to be empty. A guard whose truth depends on a column being empty is therefore
+asking about a key that is not there in exactly the state it is meant to catch.
+
+`Modified` and `Created` are always present, and they are equal only on an unmodified record, which is what
+"stamp the raiser on creation" means. The guard is also loop-safe by construction: the flow's own write
+changes `Modified`, so it cannot re-trigger. Tested 8 September 2026 — one save, one run, three correct
+stamps, `Raised_On` equal to `Created`, and no run at all for a later edit.
 
 F1c, on `CorrectiveAction` — run when either shadow disagrees with its person column, or the action is
 complete and not yet stamped:
@@ -733,12 +757,52 @@ complete and not yet stamped:
 @or(not(equals(coalesce(triggerOutputs()?['body/Owner/Email'], ''), coalesce(triggerOutputs()?['body/Owner_Email'], ''))), not(equals(coalesce(triggerOutputs()?['body/Approved_By/Email'], ''), coalesce(triggerOutputs()?['body/Approved_By_Email'], ''))), and(equals(triggerOutputs()?['body/Complete'], true), empty(coalesce(triggerOutputs()?['body/Completed_On'], ''))))
 ```
 
-F2a, on `Nonconformance` — run only when the record is linked to an inspection. This one was correct in
-the first build and is unchanged:
+F1c's **Update item** on `CorrectiveAction`, Id = `triggerBody()?['ID']`. Read the two shadow columns as a
+pair before you save — this is where the worst defect in the build was found:
 
 ```
-@not(empty(triggerOutputs()?['body/Inspection/Id']))
+CA_Reference        = triggerBody()?['CA_Reference']                  (required field, copied back unchanged)
+Nonconformance Id   = triggerBody()?['Nonconformance/Id']             (required field, copied back unchanged)
+Owner_Email         = triggerBody()?['Owner/Email']
+Approved_By_Email   = triggerBody()?['Approved_By/Email']
+Completed_On        = @if(and(equals(triggerOutputs()?['body/Complete'], true),
+                              empty(coalesce(triggerOutputs()?['body/Completed_On'], ''))),
+                          utcNow(),
+                          triggerOutputs()?['body/Completed_On'])
 ```
+
+**`Approved_By_Email` comes from `Approved_By`, never from `Owner`.** F1c was built as a copy of F1a via
+*Save as*, and the copy carried `triggerBody()?['Owner/Email']` into both shadow columns. The flow therefore
+wrote the **owner's** address into the approver's column on every run, on records with no approver set at
+all. That column is one of the three that formula 3 adjudicates, so the defect put a wrong value into the
+field the separation-of-duties gate reads — and because `Approved_By_Email` could then never agree with an
+empty `Approved_By`, the second clause of the trigger condition was permanently true and the flow ran itself
+every thirty seconds. One wrong source column, both a data-integrity fault in the gate and a loop. Corrected
+and re-tested 8 September 2026.
+
+**`Completed_On` reads `body/Completed_On`, not `body/Completed_x005f_On`.** The 7 September sweep rewrote
+this flow's trigger condition with plain names and missed this action expression, which is a different place
+in the same definition. Left as it was, `empty(coalesce(null, ''))` is always true and the flow re-stamps
+`utcNow()` on every run instead of preserving the first stamp — a fault that only shows itself on the
+*second* edit. **An encoding fix has to be applied by searching the whole definition, then re-tested.**
+
+F2a, on `Nonconformance` — run only when the record is linked to an inspection:
+
+```
+@not(empty(triggerOutputs()?['body/Inspection']))
+```
+
+**This corrects the version earlier drafts called "correct in the first build".** That version was
+`@not(empty(triggerOutputs()?['body/Inspection/Id']))`, and on 8 September 2026 a non-conformance was created
+and linked to an inspection with the flow switched on. Nothing ran, on the create or the modify. Removing the
+condition made it fire at once and complete the link write correctly.
+
+The same path works inside the actions: `Get parent inspection` resolved
+`@triggerOutputs()?['body/Inspection/Id']` to the parent's Id in that very run. So **an expression that
+resolves inside an action can still resolve to null in a trigger condition, and the designer will not tell
+you.** Do not read a rule about path depth into this — F1a's condition reads `body/Inspector/Email`, two
+segments into a person column, and evaluates correctly in the same tenant. The reason for the difference was
+not established. What was established is the procedure: prove the condition fires.
 
 F2a's **Condition** inside the flow, after a *Get item* on `Inspection` named `Get parent inspection`
 (Id = `triggerOutputs()?['body/Inspection/Id']`), joined with **Or** — proceed to the write if either the
@@ -763,10 +827,14 @@ never from `Get parent inspection`.** The first build wired that chip to
 `outputs('Get_parent_inspection')?['body/Nonconformance/Id']`, which is the parent's *existing* value, so the
 flow wrote back whatever was already there and the reverse lookup could never be set. The same review found
 an empty third row in the condition and a flow still carrying its default name; all three were corrected on
-7 September 2026. F2a has still never run against a record, so its corrected wiring is untested — treat the
-block above as the design, and prove it with T01 and T17 in `docs/06-validation-and-test-plan.md` before you
-rely on it. T17 is the loop test, and it is the one each of these flows has to pass before it is left
-switched on.
+7 September 2026.
+
+F2a was tested on 8 September 2026, once its trigger condition was corrected: a linked non-conformance
+produced exactly one run, the parent inspection received `NC_Reference_Text` and the reverse lookup, an
+unlinked non-conformance produced no run at all, and a later edit took the false branch and wrote nothing.
+The four P1 flows have now each been exercised against records. Run T17, T18 and T19 in
+`docs/06-validation-and-test-plan.md` against your own build before you leave any of them switched on — the
+conditions above are what worked in one tenant, not a guarantee about yours.
 
 ---
 
@@ -888,6 +956,44 @@ The rule that comes out of it: **never write a trigger condition against a colum
 back from a real run.** Open one run of the trigger, read the key exactly as the body shows it, and use
 that. Which form you get depends on how the column was created and on the connector, not on what the
 list settings page displays.
+
+### What the first test session taught — 8 September 2026
+
+The four P1 flows were exercised against records for the first time on 8 September 2026. All four had
+faults. None of the faults was visible in the designer, the flow checker, or the flow's Status.
+
+**A null column is absent from the trigger payload, not present-and-empty.** Read back from a real run: a
+non-conformance with most fields blank produced a body carrying only `ID`, `NC_Reference`, `Description`,
+`Modified`, `Created`, `Author` and `Editor`. Everything null was simply missing. The consequence is a trap
+with a particular shape: **a guard whose truth depends on a column being empty is asking about a key that is
+absent in exactly the state it is meant to catch.** F1b's published condition had that shape and never fired.
+
+**Silent non-firing is a failure mode, and it looks like success.** The loop of the first build was loud —
+a version number climbing on its own. Its opposite is silent. F1b and F2a each sat On, with a clean checker,
+a green Status and an empty run history, doing nothing, for as long as nobody thought to ask. **"No runs" is
+a defect until proven otherwise, not a quiet system.** The check that catches it is one qualifying change and
+one look at the run history.
+
+**A flow made by *Save as* inherits the original's field mappings, and a wrong source column is invisible in
+the card view.** F1c was copied from F1a and carried `Owner/Email` into *both* shadow columns, so it wrote
+the owner's address into the approver's column — one of the three columns formula 3 adjudicates — on records
+with no approver. That also made the second clause of its trigger condition permanently true, so the flow
+looped. One wrong source, a corrupted gate input and a loop together.
+
+This is worth holding next to the build figures in §4. Copying F1a is why F1b took 3.9 minutes against
+F1a's 34.7, and copying F1a is also how this defect propagated. The speed is real and so is the cost; a
+build sheet that reports one without the other is not telling you the truth about the method. **List every
+written column beside its source expression and read them as a pair before you save.**
+
+**An encoding fix must be applied across the whole definition.** The 7 September sweep corrected F1c's
+trigger condition and missed a `Completed_x005f_On` in the same flow's Update item expression. Symptom-led
+fixes leave siblings behind. Search the definition, fix every hit, then re-test.
+
+**Match a list by its GUID, not by its name.** The site the build ran in held two sets of lists with
+overlapping names — a list titled `Inspection` living at `/Lists/Inspection1`, and a nine-item decoy titled
+`Inspection_01` at `/Lists/Inspection`. A first pass at the loop check read the wrong record and would have
+reported the loop as fixed on evidence from a list no flow touches. Take the table GUID from the flow
+definition and confirm the list from that.
 
 ## What this document does not do
 
