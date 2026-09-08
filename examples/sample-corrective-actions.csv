@@ -1,7 +1,4 @@
-CA_Reference,Nonconformance,Action,Owner,Due,Completed_On,Effectiveness_Check,Verified_On,Approved_By,Owner_Email,Approved_By_Email,Raised_By_Email,Approved
-CA-0154,NC-0311,Update work instruction to cover all variants; retrain cell,Person B,2026-09-12,2026-07-28T14:20:00Z,No recurrence across next 5 batches,2026-08-11T10:05:00Z,Person C,person.b@example.com,person.c@example.com,person.a@example.com,Yes
-CA-0155,NC-0312,Add in-process gauge check at turning operation; supplier to report tool-change frequency,Person A,2026-09-30,2026-08-04T11:45:00Z,Zero out-of-tolerance findings across next 10 receipts,2026-08-18T09:30:00Z,Person D,person.a@example.com,person.d@example.com,person.a@example.com,Yes
-CA-0156,NC-0313,Add packaging requirement to purchase order template,Person B,2026-09-19,,,,,person.b@example.com,,person.b@example.com,No
-CA-0401,NC-0401,Define and issue a tote specification with separators for this part,Person C,2026-08-14,2026-08-07T15:10:00Z,Forty consecutive parts across four runs with no scoring,2026-08-13T08:55:00Z,Person D,person.c@example.com,person.d@example.com,person.a@example.com,Yes
-CA-0402,NC-0402,Add a tool-offset verification step between in-process checks,Person C,2026-08-21,2026-08-12T10:30:00Z,Zero out-of-tolerance in-process findings across next 8 runs,2026-08-14T16:15:00Z,Person D,person.c@example.com,person.d@example.com,person.a@example.com,Yes
-CA-0405,NC-0405,Specify and issue a label locating aid for this variant,Person D,2026-09-25,,,,,person.d@example.com,,person.b@example.com,No
+CA_Reference,Nonconformance,Action,Owner,Due,Complete,Completed_On,Effectiveness_Check,Approved_By,Owner_Email,Approved_By_Email,Raised_By_Email,Approved
+CA-0154,NC-0311,Update work instruction to cover all variants; retrain cell,Person B,2026-09-12,TRUE,2026-07-28T14:20:00Z,No recurrence across next 5 batches,Person C,person.b@example.com,person.c@example.com,person.a@example.com,TRUE
+CA-0155,NC-0312,Add in-process gauge check at turning operation; supplier to report tool-change frequency,Person A,2026-09-30,TRUE,2026-08-04T11:45:00Z,Zero out-of-tolerance findings across next 10 receipts,Person D,person.a@example.com,person.d@example.com,person.a@example.com,TRUE
+CA-0156,NC-0313,Add packaging requirement to purchase order template,Person B,2026-09-19,FALSE,,,,person.b@example.com,,person.b@example.com,FALSE

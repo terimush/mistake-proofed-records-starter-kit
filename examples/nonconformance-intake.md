@@ -11,10 +11,13 @@ questioned.
 
 ---
 
-## Why this one is worth building first
+## Why this one is worth building, and why it is not the one to start on
 
-If you build only one thing from this kit, build this. Incoming inspection is the easier pilot, but the
-non-conformance record is where the retrospective-records failure does the most damage. Nobody reconstructs
+**Build incoming inspection first, then this.** Incoming inspection is the easier pilot and it teaches you
+the mechanics on a process where getting it wrong costs nothing. This one is where the value is, and if you
+only ever build one thing from the kit it should be this — but
+it is where the retrospective-records failure does the most damage, and that makes it the harder place to
+learn. Nobody reconstructs
 an inspection from memory six months later and calls it root cause analysis. People do exactly that with
 corrective actions, and the reconstruction is what an auditor is looking at when they ask how you knew the
 problem was fixed.
@@ -49,7 +52,7 @@ to `Nonconformance` so the record can stand alone rather than hanging off an ins
 | `Inspection` | lookup → `Inspection` | Now **optional**. Populated only when `Source = Incoming inspection`. |
 | `Quantity_Affected` | number | How many units are implicated. Gate 1 requires it; enter 0 if genuinely none. |
 | `Cause_Level_4`, `Cause_Level_5` | text | Required only when `Severity = Critical`. Gate 2 enforces that. |
-| `Stage` | choice | `Raised` · `Contained` · `Analysed` · `Actioned` · `Closed`. Read-only to users; changed only by a gate. |
+| `Stage` | choice | `Raised` · `Contained` · `Analysed` · `Actioned` · `Closed`. Read-only to users on Route B; **user-set on Route A**, where validation refuses any item illegal at the stage it claims — see `docs/09-microsoft-lists-build.md` §4. |
 | `Contained_On`, `Analysed_On`, `Actioned_On`, `Closed_On` | date/time | One per transition, each **system-set** when its gate passes. Never user-typed. |
 
 `CorrectiveAction` gains one column:
@@ -115,6 +118,7 @@ REQUIRE  Cause_Level_1  is not blank
      AND Cause_Level_3  is not blank
      AND Cause_Level_2  <> Cause_Level_1
      AND Cause_Level_3  <> Cause_Level_2
+     AND Cause_Level_3  <> Cause_Level_1
      AND length(Cause_Level_3) >= 20 characters
 
 IF   Severity = Critical

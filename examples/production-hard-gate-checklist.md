@@ -61,7 +61,7 @@ One row per operation on a work order. This is the record that carries the stage
 | `Required_Checks` | number | **Calculated**, not typed — see the note below. Gate 2 compares against it. Zero is a legitimate value. |
 | `Operator` | person | Resolved directory identity. Not free text. |
 | `SignedOff_By` | person | Gate 3 requires it, and requires it to differ from `Operator` and from every checker. |
-| `Stage` | choice | `Ready` · `Running` · `Verified` · `SignedOff`. Read-only to users; changed only by a gate. |
+| `Stage` | choice | `Ready` · `Running` · `Verified` · `SignedOff`. Read-only to users on Route B; **user-set on Route A**, where validation refuses any item illegal at the stage it claims — see `docs/09-microsoft-lists-build.md` §4. |
 | `Released_On`, `Verified_On`, `SignedOff_On` | date/time | Each **system-set** when its gate passes. |
 | `Check_Frequency_At_Release` | number | **Route A machinery.** The flow copies `Check_Frequency` here when Gate 1 passes, and `Required_Checks` is computed from this rather than from the live column — see Gate 1. |
 | `Nonconformance` | lookup → `Nonconformance`, **multi-value** | Set when any check fails. Multi-value, because one operation can raise more than one — Gate 3 says "all linked non-conformance records" and means it. |

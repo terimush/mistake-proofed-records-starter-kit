@@ -1,9 +1,9 @@
 Reference,Item,Source,Quantity_Received,Quantity_Checked,Result,Inspector,Inspected_On,Stage,Nonconformance,Notes,Inspector_Email,NC_Reference_Text,Closure_Ready
-RC-2038,BRACKET-A1,Supplier Nine,250,25,Accept,Person A,2026-07-06T09:14:00Z,Closed,,Routine receipt,person.a@example.com,,TRUE
-RC-2039,SEAL-K22,Supplier Four,1000,50,Accept,Person B,2026-07-06T13:02:00Z,Closed,,,person.b@example.com,,TRUE
+RC-2038,BRACKET-A1,Supplier Nine,250,25,Accept,Person A,2026-07-06T09:14:00Z,Closed,,Routine receipt,person.a@example.com,,FALSE
+RC-2039,SEAL-K22,Supplier Four,1000,50,Accept,Person B,2026-07-06T13:02:00Z,Closed,,,person.b@example.com,,FALSE
 RC-2040,SHAFT-D7,Supplier Nine,120,12,Rework,Person A,2026-07-07T08:41:00Z,Closed,NC-0311,Burrs on 3 of 12,person.a@example.com,NC-0311,TRUE
 RC-2041,BRACKET-A1,Supplier Nine,500,50,Reject,Person A,2026-07-08T10:27:00Z,Closed,NC-0312,4 of 50 out of tolerance,person.a@example.com,NC-0312,TRUE
-RC-2042,SEAL-K22,Supplier Four,750,40,Accept,Person B,2026-07-09T09:05:00Z,Closed,,,person.b@example.com,,TRUE
+RC-2042,SEAL-K22,Supplier Four,750,40,Accept,Person B,2026-07-09T09:05:00Z,Closed,,,person.b@example.com,,FALSE
 RC-2043,HOUSING-B3,Supplier Two,60,60,Use-as-is,Person B,2026-07-10T11:33:00Z,Dispositioned,NC-0313,Cosmetic only; customer concession pending,person.b@example.com,NC-0313,FALSE
 RC-2044,SHAFT-D7,Supplier Nine,200,20,Accept,Person A,2026-07-13T08:52:00Z,Inspected,,,person.a@example.com,,FALSE
 RC-2045,GASKET-M5,Supplier Seven,400,,,,,Draft,,Awaiting inspection,,,FALSE
