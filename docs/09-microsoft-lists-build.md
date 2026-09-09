@@ -550,10 +550,10 @@ guess it replaces.
 |---|---|---|---|
 | Three lists and their columns (§2) | — | not separately timed | Column setup is repetitive rather than hard: about forty columns across three lists, each with settings that matter (step 3). The first build clocked the formulas and the whole; 8.78 h less 211 min leaves **316 min** for lists, columns and the four flows together, and that is the most that can be said about them from that build |
 | Three validation formulas (§3) | **31 min** | **211 min** | Roughly **40 %** of the whole build. See below |
-| Flow F1a · `Inspector_Email` on `Inspection` | — | **34.7 min** (31.5 carried from earlier clocks + 3.2 on the sheet) | The other three F1/F2 flows are copies of this one with the list changed. Passed 4 of 5 checks; the one it failed was the loop check — see §7, *The column-name trap* |
+| Flow F1a · `Inspector_Email` on `Inspection` | — | **34.7 min** (31.5 carried from earlier clocks + 3.2 on the sheet) | The other three F1/F2 flows are copies of this one with the list changed. 4 of 5 at the time of record; the one it failed was the loop check — see §7, *The column-name trap*. Corrected 7 September and **5 of 5 on retest, 8 September** |
 | Flow F1b · `Raised_By`, `Raised_On`, `Raised_By_Email` on `Nonconformance` | — | **3.9 min** build, **12.0 min** build and test | 5 of 5 checks |
 | Flow F1c · `Owner_Email`, `Approved_By_Email`, `Completed_On` on `CorrectiveAction` | — | **7.7 min** build and test | 6 of 6 checks |
-| Flow F2a · `NC_Reference_Text` and the reverse lookup | — | **21.8 min** | 1 of 4 checks at the time of record; the flow has still never run — see *Trigger conditions and the F2 write* below |
+| Flow F2a · `NC_Reference_Text` and the reverse lookup | — | **21.8 min** | 1 of 4 at the time of record, when the flow had never run — its trigger condition was wrong; see *Trigger conditions and the F2 write* below. Corrected and **4 of 4 on retest, 8 September**, plus the refusal case |
 | **Whole Gate 1 build** | **4.36 h** | **8.78 h** | Two working days, not one evening |
 
 **The flow figures are from a different clock.** They come from a second, instrumented build of the flows
