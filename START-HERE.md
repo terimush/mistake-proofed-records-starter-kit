@@ -11,14 +11,15 @@ low-code platform your business may already license.
 **What it is not.** Not a product, not a quality management system, not certification, and not a consultancy
 pitch. MIT licensed. There is nothing to buy and nobody to call.
 
-**It has been built.** Since the first edition, the kit has been built from its own instructions, by hand
-and with a stopwatch, in a personal Microsoft 365 tenant, and then rebuilt by the same process in a second
-tenant. The timings — the first working gate set took twice the hours the plan allowed, and the three
-validation formulas took about 40 % of that — are in `docs/09-microsoft-lists-build.md` §4. The flows that
-build produced were reviewed on 7 September 2026, two defects were found and corrected, and the corrections
-are folded back into the documents rather than left in the tenant. One trap is
-worth knowing before you open the Lists app: **a list created under "My lists" has no Validation settings;
-the lists must be created on a SharePoint site.**
+**It has been built.** Since the first edition, the kit has been built from its own instructions, by hand and
+with a stopwatch, in a personal Microsoft 365 tenant, and then rebuilt by the same process in a second tenant.
+The timings — the first working gate set took twice the hours the plan allowed, and the three validation
+formulas took about 40 % of that — are in `docs/09-microsoft-lists-build.md` §4. The flows that build produced
+were reviewed on 7 September 2026 and then run against records for the first time on 8 September. Four defects
+were found — three of them in trigger conditions this kit published — and all four flows now pass their
+checks, with the separation-of-duties gate observed refusing a save. The corrections are folded back into
+these documents rather than left in the tenant. One trap is worth knowing before you open the Lists app: **a
+list created under "My lists" has no Validation settings; the lists must be created on a SharePoint site.**
 
 ---
 

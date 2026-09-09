@@ -77,7 +77,8 @@ All notable changes to this kit are recorded here. The format follows
   never been renamed. All conditions are rewritten with plain keys and the F2a wiring is corrected; the exact
   expressions are now in `docs/09-microsoft-lists-build.md` §4, *Trigger conditions and the F2 write*, with
   the read-back rule, and `docs/03-implementation-guide.md`'s loop warning carries the rule in two sentences.
-  F2a has still not been run.
+  F2a was still untested at that point; it was tested end to end on 8 September, in the test session
+  recorded in the Fixed block above.
 - **`docs/06-validation-and-test-plan.md` gains T17, the loop test** — one edit, exactly one run, five
   minutes of silence, and a version number that did not climb — which each F-flow must pass before it is
   left on.

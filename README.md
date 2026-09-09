@@ -44,8 +44,10 @@ almost certainly already have, and the gates will be genuinely enforced — List
 server when the item is saved, so a correctly written rule holds whichever client wrote the record, including
 someone typing into the grid. That is the central claim of this kit, on a standard licence.
 `docs/09-microsoft-lists-build.md` has the formulas. The kit has been built from its own instructions, by
-hand; the flows that build produced were reviewed on 7 September 2026, two defects were found and corrected,
-and the corrections are folded back into the documents.
+hand; the flows that build produced were reviewed on 7 September 2026 and then run against records for the
+first time on 8 September. Four defects were found — three of them in trigger conditions this kit published —
+and all four flows now pass their checks, with the separation-of-duties gate observed refusing a save. The
+corrections are folded back into these documents.
 
 What Lists cannot do is lock one column against one user, so a field can be altered between stages until the
 record is locked at closure. Dataverse fixes that and costs a premium licence.
