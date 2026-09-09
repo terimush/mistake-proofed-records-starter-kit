@@ -1,9 +1,9 @@
 # Citation metadata. GitHub renders a "Cite this repository" box from this file,
 # and Zenodo reads it when minting the DOI.
 #
-# BEFORE RELEASE (VERSIONING.md explains how releases are cited):
-#   date-released -> the actual date the version below is tagged. Every other
-#   field is final. The ORCID iD is the author's registered identifier.
+# date-released is the date the version below was tagged (VERSIONING.md
+# explains how releases are cited). The ORCID iD is the author's registered
+# identifier.
 
 cff-version: 1.2.0
 title: "Mistake-Proofed Quality Records: starter kit"
@@ -51,6 +51,6 @@ keywords:
   - audit evidence
 license: MIT
 version: 1.1.0
-date-released: "{{RELEASE_DATE}}"
+date-released: "2026-09-09"
 repository-code: "https://github.com/terimush/mistake-proofed-records-starter-kit"
 url: "https://github.com/terimush/mistake-proofed-records-starter-kit"

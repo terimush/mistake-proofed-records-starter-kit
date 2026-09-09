@@ -9,25 +9,11 @@ All notable changes to this kit are recorded here. The format follows
 
 ## [Unreleased]
 
-### Fixed
+Nothing yet.
 
-- **Three of the four published Gate 1 trigger conditions were wrong and are corrected.** The four P1 flows
-  were exercised against records for the first time on 8 September 2026, and the session found that two of
-  them never fired at all while a third looped. `docs/09-microsoft-lists-build.md` §4 now carries the tested
-  expressions: F1b becomes `@equals(body/Modified, body/Created)` (fire on creation only, loop-safe by
-  construction) in place of a guard that waited for a shadow column to be empty; F2a becomes
-  `@not(empty(body/Inspection))` in place of `body/Inspection/Id`. F1a and F1c's conditions were already
-  correct and are unchanged.
-- **F1c wrote the owner's e-mail into the approver's shadow column.** The flow was built as a copy of F1a
-  and inherited `Owner/Email` as the source for both `Owner_Email` and `Approved_By_Email`, so it put a
-  wrong value into one of the three columns formula 3 adjudicates — and, because that column could then
-  never agree with an empty `Approved_By`, it also looped. `docs/09-microsoft-lists-build.md` §4 now
-  publishes F1c's full Update item mapping with the correct source.
-- **An encoded column name survived the 7 September correction pass.** F1c's `Completed_On` expression still
-  named `Completed_x005f_On`, so the "already stamped?" test was always true and the flow re-stamped the
-  completion time on every run. Corrected, and the rule added: apply an encoding fix across the whole
-  definition, then re-test.
-- The claim that F2a's corrected wiring was untested is removed; F2a has now been tested end to end.
+## [1.1.0] — 2026-09-09
+
+First release. Everything below the 1.0.0 import line was done between 20 August and 9 September 2026 and is tagged together as 1.1.0; the "Fixed" entries dated 8 September correct material that existed only in the unreleased draft.
 
 ### Added
 
@@ -47,8 +33,15 @@ All notable changes to this kit are recorded here. The format follows
 - **`docs/08-troubleshooting-and-faq.md` gains two entries:** *My flow is switched on, the checker is clean,
   and it never runs*, and *The completion timestamp keeps moving*.
 
-### Changed
+- **`GLOSSARY.md`** — every term the kit uses and does not stop to explain, grouped by when you meet it and
+  written for someone who runs a quality system rather than someone who builds software. A cold first reader
+  could not define *canvas app*, *delegation*, *shadow column*, *the grid*, *on the server* or *tenant* after
+  thirty minutes with the kit, and every one of them is load-bearing.
+- **`examples/sample-standalone-corrective-actions.csv`** — the corrective actions belonging to the
+  standalone non-conformance example, with the `Verified_On` column that example adds. They were previously
+  mixed into the core file, where their parents do not exist.
 
+### Changed
 
 - **Renamed.** The kit is now *Mistake-Proofed Quality Records* (repository `mistake-proofed-records-starter-kit`). "Hard gate" remains the name of the pattern inside the documents; only the title people meet first has changed.
 
@@ -78,7 +71,7 @@ All notable changes to this kit are recorded here. The format follows
   expressions are now in `docs/09-microsoft-lists-build.md` §4, *Trigger conditions and the F2 write*, with
   the read-back rule, and `docs/03-implementation-guide.md`'s loop warning carries the rule in two sentences.
   F2a was still untested at that point; it was tested end to end on 8 September, in the test session
-  recorded in the Fixed block above.
+  recorded in the Fixed block below.
 - **`docs/06-validation-and-test-plan.md` gains T17, the loop test** — one edit, exactly one run, five
   minutes of silence, and a version number that did not climb — which each F-flow must pass before it is
   left on.
@@ -96,17 +89,25 @@ All notable changes to this kit are recorded here. The format follows
   order the work instruction used, why it is safe, and the prediction-before-test and stopwatch practices
   the step table had not asked for.
 
-### Added
-
-- **`GLOSSARY.md`** — every term the kit uses and does not stop to explain, grouped by when you meet it and
-  written for someone who runs a quality system rather than someone who builds software. A cold first reader
-  could not define *canvas app*, *delegation*, *shadow column*, *the grid*, *on the server* or *tenant* after
-  thirty minutes with the kit, and every one of them is load-bearing.
-- **`examples/sample-standalone-corrective-actions.csv`** — the corrective actions belonging to the
-  standalone non-conformance example, with the `Verified_On` column that example adds. They were previously
-  mixed into the core file, where their parents do not exist.
-
 ### Fixed
+
+- **Three of the four published Gate 1 trigger conditions were wrong and are corrected.** The four P1 flows
+  were exercised against records for the first time on 8 September 2026, and the session found that two of
+  them never fired at all while a third looped. `docs/09-microsoft-lists-build.md` §4 now carries the tested
+  expressions: F1b becomes `@equals(body/Modified, body/Created)` (fire on creation only, loop-safe by
+  construction) in place of a guard that waited for a shadow column to be empty; F2a becomes
+  `@not(empty(body/Inspection))` in place of `body/Inspection/Id`. F1a and F1c's conditions were already
+  correct and are unchanged.
+- **F1c wrote the owner's e-mail into the approver's shadow column.** The flow was built as a copy of F1a
+  and inherited `Owner/Email` as the source for both `Owner_Email` and `Approved_By_Email`, so it put a
+  wrong value into one of the three columns formula 3 adjudicates — and, because that column could then
+  never agree with an empty `Approved_By`, it also looped. `docs/09-microsoft-lists-build.md` §4 now
+  publishes F1c's full Update item mapping with the correct source.
+- **An encoded column name survived the 7 September correction pass.** F1c's `Completed_On` expression still
+  named `Completed_x005f_On`, so the "already stamped?" test was always true and the flow re-stamped the
+  completion time on every run. Corrected, and the rule added: apply an encoding fix across the whole
+  definition, then re-test.
+- The claim that F2a's corrected wiring was untested is removed; F2a has now been tested end to end.
 
 - **Formula 1's closure clause was satisfied by a machinery column being absent** — the exact shape
   `docs/01-data-model.md` calls the most expensive mistake in the kit. Re-anchored on `Result`, which the user
@@ -272,5 +273,6 @@ Repository import. Not tagged and not released; first release is 1.1.0. Kept as 
   assumption underneath it is unconfirmed and the body of the kit should not depend on it. Sample data and
   metadata were corrected to match.
 
-[Unreleased]: https://github.com/terimush/mistake-proofed-records-starter-kit/compare/5481729f1949a05d89e8af28d09a6adc7f0f929d...HEAD
+[Unreleased]: https://github.com/terimush/mistake-proofed-records-starter-kit/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/terimush/mistake-proofed-records-starter-kit/compare/5481729f1949a05d89e8af28d09a6adc7f0f929d...v1.1.0
 [1.0.0]: https://github.com/terimush/mistake-proofed-records-starter-kit/commit/5481729f1949a05d89e8af28d09a6adc7f0f929d
